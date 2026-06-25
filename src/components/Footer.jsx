@@ -27,9 +27,6 @@ export default function Footer({ setActiveTab, companyInfo }) {
               <a href={companyInfo.lineUrl || "#"} target="_blank" rel="noreferrer" className="footer-social-icon" aria-label="Line">
                 L
               </a>
-              <a href={companyInfo.facebookUrl || "#"} target="_blank" rel="noreferrer" className="footer-social-icon" aria-label="Facebook">
-                F
-              </a>
             </div>
           </div>
 
