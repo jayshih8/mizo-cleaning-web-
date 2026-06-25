@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://jayshih8.github.io/mizo-cleaning-web-/sitemap.xml
