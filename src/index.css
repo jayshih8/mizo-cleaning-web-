@@ -54,6 +54,7 @@ body {
   background-color: var(--bg-light);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  padding-top: 80px; /* Offset for fixed header */
 }
 
 a {
@@ -230,14 +231,13 @@ h1, h2, h3, h4, h5, h6 {
 .header-wrapper {
   background-color: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(12px);
-  position: sticky;
+  position: fixed; /* Use fixed positioning for maximum cross-browser stability */
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 100;
   border-bottom: 1px solid rgba(229, 231, 235, 0.5);
   box-shadow: var(--shadow-sm);
-  height: 80px;
-  display: flex;
-  align-items: center;
   width: 100%;
 }
 
@@ -245,8 +245,7 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 100%;
-  width: 100%;
+  height: 80px;
 }
 
 .logo {
