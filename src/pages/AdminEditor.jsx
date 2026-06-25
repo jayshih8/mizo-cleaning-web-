@@ -79,6 +79,112 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
     showToast('contentConfig.json 下載成功！請將此檔案複製覆蓋專案 src/data/contentConfig.json');
   };
 
+  const getServiceDefaultImage = (id) => {
+    switch (id) {
+      case 'building-factory': return 'images/banner_building.png';
+      case 'hotel-cleaning': return 'images/hotel.jpg';
+      case 'office-cleaning': return 'images/history.jpg';
+      case 'hospital-cleaning': return 'images/training.jpg';
+      default: return 'images/banner_building.png';
+    }
+  };
+
+  const handleAddService = () => {
+    const newId = `custom-service-${Date.now()}`;
+    const newService = {
+      id: newId,
+      title: '新增清潔服務項目',
+      description: '請輸入此服務項目的詳細描述，介紹您如何提供這項專業清潔維護服務。',
+      features: [
+        '服務特色要點一',
+        '服務特色要點二'
+      ],
+      image: ''
+    };
+    setLocalData(prev => ({
+      ...prev,
+      services: {
+        ...prev.services,
+        items: [...prev.services.items, newService]
+      }
+    }));
+    showToast('已新增一個服務項目！請在下方進行編輯。');
+  };
+
+  const handleDeleteService = (index) => {
+    if (window.confirm('確定要刪除此服務項目嗎？此操作將會移除前台的對應分頁。')) {
+      const newItems = localData.services.items.filter((_, i) => i !== index);
+      setLocalData(prev => ({
+        ...prev,
+        services: {
+          ...prev.services,
+          items: newItems
+        }
+      }));
+      showToast('已刪除服務項目！');
+    }
+  };
+
+  const handleAddHistory = () => {
+    const newHist = {
+      year: '民國 年 (20XX 年)',
+      title: '請輸入歷史事件標題',
+      description: '請在此輸入該發展階段的具體大事紀或成就描述。'
+    };
+    setLocalData(prev => ({
+      ...prev,
+      about: {
+        ...prev.about,
+        history: [...prev.about.history, newHist]
+      }
+    }));
+    showToast('已新增一筆歷史沿革！');
+  };
+
+  const handleDeleteHistory = (index) => {
+    if (window.confirm('確定要刪除此沿革節點嗎？')) {
+      const newHistory = localData.about.history.filter((_, i) => i !== index);
+      setLocalData(prev => ({
+        ...prev,
+        about: {
+          ...prev.about,
+          history: newHistory
+        }
+      }));
+      showToast('已刪除歷史沿革！');
+    }
+  };
+
+  const handleAddCert = () => {
+    const newCert = {
+      title: '新增專業證書/公會榮譽',
+      description: '請輸入證書主管機關、核發緣由或安全標準等法規說明。',
+      image: ''
+    };
+    setLocalData(prev => ({
+      ...prev,
+      credentials: {
+        ...prev.credentials,
+        certs: [...prev.credentials.certs, newCert]
+      }
+    }));
+    showToast('已新增一筆證書/榮譽！請上傳證照照片。');
+  };
+
+  const handleDeleteCert = (index) => {
+    if (window.confirm('確定要刪除此證書榮譽嗎？')) {
+      const newCerts = localData.credentials.certs.filter((_, i) => i !== index);
+      setLocalData(prev => ({
+        ...prev,
+        credentials: {
+          ...prev.credentials,
+          certs: newCerts
+        }
+      }));
+      showToast('已刪除證書項目！');
+    }
+  };
+
   return (
     <div className="admin-layout animate-fade-in">
       <div className="container">
@@ -383,14 +489,32 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
                   />
                 </div>
 
-                <h3 style={{ fontSize: '1.15rem', marginTop: '2.5rem', marginBottom: '1rem', color: 'var(--primary-color)' }}>
-                  發展沿革歷史節點 (History Timelines)
-                </h3>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '2.5rem', marginBottom: '1rem' }}>
+                  <h3 style={{ fontSize: '1.15rem', color: 'var(--primary-color)', margin: 0 }}>
+                    發展沿革歷史節點 (History Timelines)
+                  </h3>
+                  <button
+                    onClick={handleAddHistory}
+                    className="btn btn-secondary"
+                    style={{ padding: '0.4rem 1rem', fontSize: '0.85rem', display: 'flex', gap: '0.25rem', alignItems: 'center' }}
+                  >
+                    <Plus size={14} />
+                    <span>新增沿革節點</span>
+                  </button>
+                </div>
                 <div>
                   {localData.about.history.map((hist, index) => (
                     <div key={index} className="admin-list-item">
-                      <div className="admin-list-item-header">
+                      <div className="admin-list-item-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <span className="admin-badge">沿革 {index + 1}</span>
+                        <button
+                          onClick={() => handleDeleteHistory(index)}
+                          className="btn btn-outline"
+                          style={{ borderColor: '#ef4444', color: '#ef4444', padding: '0.25rem 0.5rem', fontSize: '0.8rem', display: 'flex', gap: '0.25rem', alignItems: 'center' }}
+                        >
+                          <Trash size={12} />
+                          <span>刪除節點</span>
+                        </button>
                       </div>
                       <div className="admin-grid">
                         <div className="form-group">
@@ -542,14 +666,32 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
                   />
                 </div>
 
-                <h3 style={{ fontSize: '1.15rem', marginTop: '2rem', marginBottom: '1rem', color: 'var(--primary-color)' }}>
-                  具體清潔服務清單 (Services List)
-                </h3>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '2rem', marginBottom: '1rem' }}>
+                  <h3 style={{ fontSize: '1.15rem', color: 'var(--primary-color)', margin: 0 }}>
+                    具體清潔服務清單 (Services List)
+                  </h3>
+                  <button
+                    onClick={handleAddService}
+                    className="btn btn-secondary"
+                    style={{ padding: '0.4rem 1rem', fontSize: '0.85rem', display: 'flex', gap: '0.25rem', alignItems: 'center' }}
+                  >
+                    <Plus size={14} />
+                    <span>新增服務項目</span>
+                  </button>
+                </div>
                 
                 {localData.services.items.map((service, index) => (
                   <div key={service.id} className="admin-list-item">
-                    <div className="admin-list-item-header">
-                      <span className="admin-badge" style={{ backgroundColor: 'var(--secondary-color)' }}>{service.title}</span>
+                    <div className="admin-list-item-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span className="admin-badge" style={{ backgroundColor: 'var(--secondary-color)' }}>{service.title || '新服務項目'}</span>
+                      <button
+                        onClick={() => handleDeleteService(index)}
+                        className="btn btn-outline"
+                        style={{ borderColor: '#ef4444', color: '#ef4444', padding: '0.25rem 0.5rem', fontSize: '0.8rem', display: 'flex', gap: '0.25rem', alignItems: 'center' }}
+                      >
+                        <Trash size={12} />
+                        <span>刪除項目</span>
+                      </button>
                     </div>
                     <div className="form-group">
                       <label>服務名稱</label>
@@ -576,6 +718,25 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
                           setLocalData(prev => ({ ...prev, services: { ...prev.services, items: newServices } }));
                         }}
                       />
+                    </div>
+
+                    {/* Service Image upload */}
+                    <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+                      <label>服務大圖 (點擊或拖曳上傳，自動轉 Base64)</label>
+                      <div className="image-upload-zone" onClick={() => document.getElementById(`serviceUpload-${index}`).click()}>
+                        <Info size={24} style={{ color: 'var(--text-muted)' }} />
+                        <span>點擊上傳圖片以替換此服務的顯示大圖 (建議寬比高長之橫幅照片)</span>
+                        <input
+                          type="file"
+                          id={`serviceUpload-${index}`}
+                          style={{ display: 'none' }}
+                          accept="image/*"
+                          onChange={(e) => handleImageUpload(['services', 'items', index, 'image'], e.target.files[0])}
+                        />
+                        {(service.image || getServiceDefaultImage(service.id)) && (
+                          <img src={service.image || getServiceDefaultImage(service.id)} alt="Service Banner Preview" className="image-preview-thumbnail" />
+                        )}
+                      </div>
                     </div>
 
                     <div className="form-group" style={{ marginBottom: 0 }}>
@@ -624,14 +785,32 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
                   />
                 </div>
 
-                <h3 style={{ fontSize: '1.15rem', marginTop: '2.5rem', marginBottom: '1rem', color: 'var(--primary-color)' }}>
-                  公會會員證書與勞安證照 (Certificates List)
-                </h3>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '2.5rem', marginBottom: '1rem' }}>
+                  <h3 style={{ fontSize: '1.15rem', color: 'var(--primary-color)', margin: 0 }}>
+                    公會會員證書與勞安證照 (Certificates List)
+                  </h3>
+                  <button
+                    onClick={handleAddCert}
+                    className="btn btn-secondary"
+                    style={{ padding: '0.4rem 1rem', fontSize: '0.85rem', display: 'flex', gap: '0.25rem', alignItems: 'center' }}
+                  >
+                    <Plus size={14} />
+                    <span>新增證書榮譽</span>
+                  </button>
+                </div>
 
                 {localData.credentials.certs.map((cert, index) => (
                   <div key={index} className="admin-list-item">
-                    <div className="admin-list-item-header">
+                    <div className="admin-list-item-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span className="admin-badge">證書/合規照 {index + 1}</span>
+                      <button
+                        onClick={() => handleDeleteCert(index)}
+                        className="btn btn-outline"
+                        style={{ borderColor: '#ef4444', color: '#ef4444', padding: '0.25rem 0.5rem', fontSize: '0.8rem', display: 'flex', gap: '0.25rem', alignItems: 'center' }}
+                      >
+                        <Trash size={12} />
+                        <span>刪除項目</span>
+                      </button>
                     </div>
                     <div className="form-group">
                       <label>證書標題</label>

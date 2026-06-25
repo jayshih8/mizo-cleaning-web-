@@ -7,8 +7,10 @@ export default function Services({ servicesData }) {
   const activeService = servicesData.items.find(item => item.id === activeServiceId) || servicesData.items[0];
 
   // Helper to determine service image
-  const getServiceImage = (id) => {
-    switch (id) {
+  const getServiceImage = (service) => {
+    if (!service) return 'images/banner_building.png';
+    if (service.image) return service.image;
+    switch (service.id) {
       case 'building-factory': return 'images/banner_building.png';
       case 'hotel-cleaning': return 'images/hotel.jpg';
       case 'office-cleaning': return 'images/history.jpg';
@@ -32,7 +34,7 @@ export default function Services({ servicesData }) {
             <button
               key={item.id}
               onClick={() => setActiveServiceId(item.id)}
-              className={`service-tab-btn ${activeServiceId === item.id ? 'active' : ''}`}
+              className={`service-tab-btn ${activeServiceId === item.id || (activeServiceId === '' && servicesData.items[0]?.id === item.id) ? 'active' : ''}`}
             >
               {item.title}
             </button>
@@ -47,7 +49,7 @@ export default function Services({ servicesData }) {
               <div
                 className="service-image-side"
                 style={{
-                  backgroundImage: `url(${getServiceImage(activeService.id)})`,
+                  backgroundImage: `url(${getServiceImage(activeService)})`,
                   minHeight: '300px'
                 }}
               />
