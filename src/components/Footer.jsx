@@ -23,11 +23,6 @@ export default function Footer({ setActiveTab, companyInfo }) {
             <p style={{ color: '#94a3b8', fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '1.5rem' }}>
               源於 1979 年中日合資技術合作，致力於大型大樓與工廠的清潔維護，秉持專業、工安與高水準的教育訓練服務各大企業。
             </p>
-            <div className="footer-socials">
-              <a href={companyInfo.lineUrl || "#"} target="_blank" rel="noreferrer" className="footer-social-icon" aria-label="Line">
-                L
-              </a>
-            </div>
           </div>
 
           <div>
