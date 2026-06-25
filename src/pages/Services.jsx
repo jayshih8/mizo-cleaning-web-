@@ -9,11 +9,11 @@ export default function Services({ servicesData }) {
   // Helper to determine service image
   const getServiceImage = (id) => {
     switch (id) {
-      case 'building-factory': return '/images/banner_building.png';
-      case 'hotel-cleaning': return '/images/hotel.jpg';
-      case 'office-cleaning': return '/images/history.jpg';
-      case 'hospital-cleaning': return '/images/training.jpg';
-      default: return '/images/banner_building.png';
+      case 'building-factory': return 'images/banner_building.png';
+      case 'hotel-cleaning': return 'images/hotel.jpg';
+      case 'office-cleaning': return 'images/history.jpg';
+      case 'hospital-cleaning': return 'images/training.jpg';
+      default: return 'images/banner_building.png';
     }
   };
 
@@ -100,7 +100,7 @@ export default function Services({ servicesData }) {
             </div>
             <div style={{ borderRadius: 'var(--radius-md)', overflow: 'hidden', boxShadow: 'var(--shadow-md)', height: '280px' }}>
               <img
-                src="/images/hotel.jpg"
+                src="images/hotel.jpg"
                 alt="馥華艾美酒店實績"
                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
               />

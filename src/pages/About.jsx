@@ -51,7 +51,7 @@ export default function About({ aboutData }) {
               <div 
                 className="training-image-wrap" 
                 style={{ 
-                  backgroundImage: `url(${aboutData.training.image || '/images/training.jpg'})`,
+                  backgroundImage: `url(${aboutData.training.image || 'images/training.jpg'})`,
                 }}
               />
               

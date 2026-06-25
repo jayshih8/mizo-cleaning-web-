@@ -16,7 +16,7 @@
   "home": {
     "heroTitle": "日式精工・極致潔淨",
     "heroSubtitle": "始於 1979 年中日合資技術傳承，專注大型廠辦、商辦、星級飯店與綜合醫院的清潔維護與安全管理",
-    "heroBanner": "/images/banner_building.png",
+    "heroBanner": "images/banner_building.png",
     "ctaText": "免費現場評估與估價",
     "features": [
       {
@@ -79,7 +79,7 @@
     "training": {
       "title": "員工教育訓練",
       "subtitle": "公司定期舉辦員工教育訓練，維持工作人員從業品質",
-      "image": "/images/training.jpg",
+      "image": "images/training.jpg",
       "items": [
         {
           "title": "在職教育",
@@ -150,12 +150,12 @@
       {
         "title": "台北市清潔服務商業同業公會會員證書 & 金質獎",
         "description": "公司同為公會優良會員公司，並為公會金質獎穩定獲獎廠商。秉持著增加企業之間團隊服務精神的理念，加入公會並持續提供優良服務。",
-        "image": "/images/association_cert.jpg"
+        "image": "images/association_cert.jpg"
       },
       {
         "title": "甲種職業安全衛生業務主管結業證書",
         "description": "針對第一類事業（如製造業等高風險行業）勞工 100 人以上，依法必須成立直接隸屬雇主之專責職業安全衛生管理單位。本公司依法配置甲種主管，並建立符合 CNS 45001 標準之安全管理系統，保障勞工安全健康，展現有組織、有人員、有系統之安衛管理。",
-        "image": "/images/safety_cert.jpg"
+        "image": "images/safety_cert.jpg"
       }
     ]
   }

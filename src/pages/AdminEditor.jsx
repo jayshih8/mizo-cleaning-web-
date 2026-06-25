@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Save, Download, RotateCcw, AlertTriangle, FileText, Info, Plus, Trash } from 'lucide-react';
+import { Save, Download, RotateCcw, AlertTriangle, FileText, Info, Plus, Trash, LogOut } from 'lucide-react';
 
-export default function AdminEditor({ configData, onSave, onReset }) {
+export default function AdminEditor({ configData, onSave, onReset, setActiveTab }) {
   const [localData, setLocalData] = useState(JSON.parse(JSON.stringify(configData)));
   const [activeSubTab, setActiveSubTab] = useState('company');
   const [toastMessage, setToastMessage] = useState('');
@@ -102,6 +102,18 @@ export default function AdminEditor({ configData, onSave, onReset }) {
             </p>
           </div>
           <div className="admin-actions">
+            <button
+              onClick={() => {
+                setActiveTab('home');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className="btn btn-outline"
+              style={{ borderColor: 'var(--primary-color)', color: 'var(--primary-color)' }}
+              title="離開後台並回到前台網站"
+            >
+              <LogOut size={16} />
+              <span>返回前台</span>
+            </button>
             <button onClick={handleSave} className="btn btn-primary" title="套用暫存並在瀏覽器預覽">
               <Save size={16} />
               <span>即時套用</span>

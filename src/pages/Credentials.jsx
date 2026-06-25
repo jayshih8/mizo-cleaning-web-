@@ -22,7 +22,7 @@ export default function Credentials({ credentialsData }) {
               {/* Photo Area */}
               <div className="cert-img-wrap">
                 <img
-                  src={cert.image || '/images/association_cert.jpg'}
+                  src={cert.image || 'images/association_cert.jpg'}
                   alt={cert.title}
                 />
               </div>

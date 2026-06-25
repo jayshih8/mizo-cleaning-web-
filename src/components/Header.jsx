@@ -43,20 +43,7 @@ export default function Header({ activeTab, setActiveTab, companyInfo }) {
                 </a>
               </li>
             ))}
-            {/* Secret entrance to admin in desktop menu, styled discretely */}
-            <li>
-              <a
-                href="#admin"
-                className={`nav-link ${activeTab === 'admin' ? 'active' : ''}`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleNavClick('admin');
-                }}
-                style={{ opacity: 0.5, fontSize: '0.9rem' }}
-              >
-                內容管理
-              </a>
-            </li>
+
           </ul>
 
           <a href={`tel:${companyInfo.phone}`} className="nav-phone">
@@ -86,18 +73,7 @@ export default function Header({ activeTab, setActiveTab, companyInfo }) {
             </a>
           </li>
         ))}
-        <li>
-          <a
-            href="#admin"
-            className={`nav-link ${activeTab === 'admin' ? 'active' : ''}`}
-            onClick={(e) => {
-              e.preventDefault();
-              handleNavClick('admin');
-            }}
-          >
-            網站內容管理
-          </a>
-        </li>
+
       </ul>
     </header>
   );

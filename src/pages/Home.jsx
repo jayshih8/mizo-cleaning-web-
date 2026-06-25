@@ -13,7 +13,7 @@ export default function Home({ homeData, companyInfo, setActiveTab }) {
   };
 
   const bannerStyle = {
-    backgroundImage: `url(${homeData.heroBanner || '/images/banner_building.png'})`,
+    backgroundImage: `url(${homeData.heroBanner || 'images/banner_building.png'})`,
   };
 
   return (
@@ -80,7 +80,7 @@ export default function Home({ homeData, companyInfo, setActiveTab }) {
             <div style={{ position: 'relative', height: '420px', borderRadius: 'var(--radius-lg)', overflow: 'hidden', boxShadow: 'var(--shadow-premium)' }}>
               <div
                 style={{
-                  backgroundImage: "url('/images/hotel.jpg')",
+                  backgroundImage: "url('images/hotel.jpg')",
                   backgroundSize: 'cover',
                   backgroundPosition: 'center',
                   width: '100%',

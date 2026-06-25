@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import FloatingWidget from './components/FloatingWidget';
@@ -15,6 +15,44 @@ import initialConfig from './data/contentConfig.json';
 export default function App() {
   // Navigation active tab state: 'home' | 'about' | 'services' | 'credentials' | 'contact' | 'admin'
   const [activeTab, setActiveTab] = useState('home');
+
+  // Monitor hash change for secret admin login and general routing
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash;
+      if (hash === '#/admin-portal' || hash === '#/admin' || hash === '#admin') {
+        setActiveTab('admin');
+      } else if (hash === '#/home' || hash === '#home') {
+        setActiveTab('home');
+      } else if (hash === '#/about' || hash === '#about') {
+        setActiveTab('about');
+      } else if (hash === '#/services' || hash === '#services') {
+        setActiveTab('services');
+      } else if (hash === '#/credentials' || hash === '#credentials') {
+        setActiveTab('credentials');
+      } else if (hash === '#/contact' || hash === '#contact') {
+        setActiveTab('contact');
+      }
+    };
+
+    handleHashChange();
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  // Update hash when activeTab changes
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (activeTab === 'admin') {
+      if (hash !== '#/admin-portal') {
+        window.location.hash = '#/admin-portal';
+      }
+    } else {
+      if (hash === '#/admin-portal' || hash === '#/admin' || hash === '#admin') {
+        window.location.hash = '#/home';
+      }
+    }
+  }, [activeTab]);
 
   // Load configuration from localStorage if edit session exists, fallback to imported json
   const [config, setConfig] = useState(() => {
@@ -64,6 +102,7 @@ export default function App() {
             configData={config}
             onSave={handleSaveConfig}
             onReset={handleResetConfig}
+            setActiveTab={setActiveTab}
           />
         );
       default:
