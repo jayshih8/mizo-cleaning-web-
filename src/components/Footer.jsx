@@ -13,7 +13,11 @@ export default function Footer({ setActiveTab, companyInfo }) {
         <div className="footer-grid">
           <div className="footer-brand">
             <h2 className="logo" style={{ color: 'white', marginBottom: '1rem' }}>
-              <div className="logo-icon-wrap" style={{ boxShadow: 'none' }}>TB</div>
+              {companyInfo.logoImage ? (
+                <img src={companyInfo.logoImage} alt="Logo" style={{ height: '42px', width: 'auto', objectFit: 'contain', borderRadius: 'var(--radius-sm)' }} />
+              ) : (
+                <div className="logo-icon-wrap" style={{ boxShadow: 'none' }}>{companyInfo.logoIconText || 'TB'}</div>
+              )}
               <span>{companyInfo.logoText || '東亞美裝'}</span>
             </h2>
             <p style={{ color: '#94a3b8', fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '1.5rem' }}>

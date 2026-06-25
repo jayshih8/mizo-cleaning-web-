@@ -23,7 +23,11 @@ export default function Header({ activeTab, setActiveTab, companyInfo }) {
       <div className="container">
         <nav className="navbar">
           <a href="#home" className="logo" onClick={(e) => { e.preventDefault(); handleNavClick('home'); }}>
-            <div className="logo-icon-wrap">TB</div>
+            {companyInfo.logoImage ? (
+              <img src={companyInfo.logoImage} alt="Logo" style={{ height: '42px', width: 'auto', objectFit: 'contain', borderRadius: 'var(--radius-sm)' }} />
+            ) : (
+              <div className="logo-icon-wrap">{companyInfo.logoIconText || 'TB'}</div>
+            )}
             <span>{companyInfo.logoText || '東亞美裝'}</span>
           </a>
 

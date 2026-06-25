@@ -308,13 +308,40 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
                     />
                   </div>
                   <div className="form-group">
-                    <label>標誌文字 (Logo Text)</label>
+                    <label>標誌文字 (Logo Text - 如：東亞美裝 TB)</label>
                     <input
                       type="text"
                       className="form-control"
                       value={localData.company.logoText}
                       onChange={(e) => handleCompanyChange('logoText', e.target.value)}
                     />
+                  </div>
+                  <div className="form-group">
+                    <label>標誌縮寫圖標 (Logo Icon Text - 如：TB)</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={localData.company.logoIconText || ''}
+                      onChange={(e) => handleCompanyChange('logoIconText', e.target.value)}
+                      placeholder="例如：TB"
+                    />
+                  </div>
+                  <div className="form-group admin-grid-full" style={{ marginBottom: '1.5rem' }}>
+                    <label>Logo 專屬圖檔 (選填，上傳圖片後將取代上述縮寫圖標，自動轉 Base64)</label>
+                    <div className="image-upload-zone" onClick={() => document.getElementById('logoImageUpload').click()}>
+                      <Info size={24} style={{ color: 'var(--text-muted)' }} />
+                      <span>點擊上傳圖片以設置您公司的 Logo 圖檔</span>
+                      <input
+                        type="file"
+                        id="logoImageUpload"
+                        style={{ display: 'none' }}
+                        accept="image/*"
+                        onChange={(e) => handleImageUpload(['company', 'logoImage'], e.target.files[0])}
+                      />
+                      {localData.company.logoImage && (
+                        <img src={localData.company.logoImage} alt="Logo Preview" className="image-preview-thumbnail" />
+                      )}
+                    </div>
                   </div>
                   <div className="form-group">
                     <label>電話 (系統撥打用，僅限數字)</label>
