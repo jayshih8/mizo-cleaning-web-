@@ -352,13 +352,19 @@ h1, h2, h3, h4, h5, h6 {
   flex-direction: column;
   gap: 1.25rem;
   list-style: none;
-  transform: translateY(-110%);
+  transform: translateY(-10px);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
   transition: var(--transition-smooth);
   z-index: 99;
 }
 
 .mobile-nav.open {
   transform: translateY(0);
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
 }
 
 .mobile-nav .nav-link {
