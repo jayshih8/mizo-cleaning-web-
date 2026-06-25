@@ -83,9 +83,6 @@ export default function Footer({ setActiveTab, companyInfo }) {
 
         <div className="footer-bottom">
           <p>© {new Date().getFullYear()} {companyInfo.name || '美裝公寓大廈管理維護股份有限公司'} All rights reserved.</p>
-          <p style={{ fontSize: '0.8rem', color: '#475569' }}>
-            Powered by Antigravity IDE
-          </p>
         </div>
       </div>
     </footer>
