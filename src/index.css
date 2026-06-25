@@ -229,16 +229,20 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Navbar */
 .header-wrapper {
-  background-color: rgba(255, 255, 255, 0.95);
+  background-color: rgba(255, 0, 0, 0.5) !important; /* Debug Red */
   backdrop-filter: blur(12px);
   position: fixed; /* Use fixed positioning for maximum cross-browser stability */
   top: 0;
   left: 0;
   right: 0;
   z-index: 100;
-  border-bottom: 1px solid rgba(229, 231, 235, 0.5);
+  border-bottom: 3px solid red;
   box-shadow: var(--shadow-sm);
   width: 100%;
+}
+
+.header-wrapper .container {
+  background-color: rgba(0, 255, 0, 0.3) !important; /* Debug Green */
 }
 
 .navbar {
@@ -246,6 +250,7 @@ h1, h2, h3, h4, h5, h6 {
   align-items: center;
   justify-content: space-between;
   height: 80px;
+  background-color: rgba(0, 0, 255, 0.3) !important; /* Debug Blue */
 }
 
 .logo {
@@ -344,7 +349,7 @@ h1, h2, h3, h4, h5, h6 {
   border-bottom: 1px solid #e5e7eb;
   padding: 1.5rem;
   box-shadow: var(--shadow-lg);
-  display: flex;
+  display: none; /* Hide on desktop to prevent header overlay issues */
   flex-direction: column;
   gap: 1.25rem;
   list-style: none;
@@ -1240,6 +1245,9 @@ textarea.form-control {
   }
   .nav-links, .nav-phone {
     display: none;
+  }
+  .mobile-nav {
+    display: flex; /* Show on mobile viewports only */
   }
   .grid-2 {
     grid-template-columns: 1fr;
