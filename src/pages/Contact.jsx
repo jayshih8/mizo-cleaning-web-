@@ -231,27 +231,16 @@ export default function Contact({ companyInfo }) {
 
         {/* Map */}
         <div className="map-container">
-          <div className="map-placeholder">
-            <MapPin size={48} style={{ color: 'var(--primary-color)', marginBottom: '1rem' }} />
-            <h3 style={{ marginBottom: '0.5rem' }}>{companyInfo.name}</h3>
-            <p style={{ color: 'var(--text-muted)' }}>{companyInfo.address}</p>
-            <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
-              (此處為 Google 地圖嵌入區域)
-            </span>
-            <div 
-              style={{ 
-                marginTop: '1.5rem', 
-                border: '1px solid #cbd5e1', 
-                padding: '0.75rem 1.5rem', 
-                borderRadius: 'var(--radius-sm)',
-                backgroundColor: 'white',
-                color: 'var(--text-dark)',
-                fontSize: '0.9rem'
-              }}
-            >
-              台北市中山區民權東路一段53號11樓 (捷運中山國小站旁)
-            </div>
-          </div>
+          <iframe
+            title="Google Map"
+            src={`https://maps.google.com/maps?q=${encodeURIComponent(companyInfo.address || '台北市中山區民權東路一段53號11樓')}&t=&z=16&ie=UTF8&iwloc=&output=embed`}
+            width="100%"
+            height="100%"
+            style={{ border: 0 }}
+            allowFullScreen=""
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+          ></iframe>
         </div>
       </div>
     </div>
