@@ -1,8 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CheckCircle2 } from 'lucide-react';
 
 export default function Services({ servicesData }) {
   const [activeServiceId, setActiveServiceId] = useState(servicesData.items[0]?.id || '');
+
+  useEffect(() => {
+    const scrollToId = sessionStorage.getItem('mizo_scroll_to_service');
+    if (scrollToId) {
+      sessionStorage.removeItem('mizo_scroll_to_service');
+      const exists = servicesData.items.some(item => item.id === scrollToId);
+      if (exists) {
+        setActiveServiceId(scrollToId);
+        setTimeout(() => {
+          const element = document.querySelector('.service-tabs-nav');
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }, 150);
+      }
+    }
+  }, [servicesData]);
 
   const activeService = servicesData.items.find(item => item.id === activeServiceId) || servicesData.items[0];
 

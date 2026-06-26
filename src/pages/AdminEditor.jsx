@@ -343,6 +343,68 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
     }
   };
 
+  const handleAddCase = () => {
+    const newCase = {
+      title: '新增工程實績案例',
+      category: '施工項目類別',
+      description: '請輸入此實績的詳細施工內容、地點或成果說明。',
+      image: ''
+    };
+    setLocalData(prev => ({
+      ...prev,
+      home: {
+        ...prev.home,
+        cases: [...(prev.home.cases || []), newCase]
+      }
+    }));
+    showToast('已新增一筆工程實績！');
+  };
+
+  const handleDeleteCase = (index) => {
+    if (window.confirm('確定要刪除此施工實績嗎？')) {
+      const newCases = (localData.home.cases || []).filter((_, i) => i !== index);
+      setLocalData(prev => ({
+        ...prev,
+        home: {
+          ...prev.home,
+          cases: newCases
+        }
+      }));
+      showToast('已刪除施工實績項目！');
+    }
+  };
+
+  const handleAddTestimonial = () => {
+    const newTestimonial = {
+      name: '客戶姓名/尊稱',
+      role: '職稱',
+      company: '公司或機構名稱',
+      feedback: '請在此輸入客戶對我們服務的好評見證內容。'
+    };
+    setLocalData(prev => ({
+      ...prev,
+      home: {
+        ...prev.home,
+        testimonials: [...(prev.home.testimonials || []), newTestimonial]
+      }
+    }));
+    showToast('已新增一筆客戶好評見證！');
+  };
+
+  const handleDeleteTestimonial = (index) => {
+    if (window.confirm('確定要刪除此客戶好評見證嗎？')) {
+      const newTestimonials = (localData.home.testimonials || []).filter((_, i) => i !== index);
+      setLocalData(prev => ({
+        ...prev,
+        home: {
+          ...prev.home,
+          testimonials: newTestimonials
+        }
+      }));
+      showToast('已刪除客戶見證項目！');
+    }
+  };
+
   if (!isAuthenticated) {
     return (
       <div style={{
@@ -1007,6 +1069,182 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
                             setLocalData(prev => ({ ...prev, home: { ...prev.home, stats: newStats } }));
                           }}
                         />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* 近期施工實績管理 (NEW) */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '2.5rem', marginBottom: '1rem' }}>
+                  <h3 style={{ fontSize: '1.15rem', color: 'var(--primary-color)', margin: 0 }}>
+                    近期施工實績 (Recent Case Showcase)
+                  </h3>
+                  <button
+                    onClick={handleAddCase}
+                    className="btn btn-secondary"
+                    style={{ padding: '0.4rem 1rem', fontSize: '0.85rem', display: 'flex', gap: '0.25rem', alignItems: 'center' }}
+                  >
+                    <Plus size={14} />
+                    <span>新增施工實績</span>
+                  </button>
+                </div>
+                <div>
+                  {(localData.home.cases || []).map((c, index) => (
+                    <div key={index} className="admin-list-item">
+                      <div className="admin-list-item-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span className="admin-badge" style={{ backgroundColor: 'var(--secondary-color)' }}>實績案例 {index + 1}</span>
+                        <button
+                          onClick={() => handleDeleteCase(index)}
+                          className="btn btn-outline"
+                          style={{ borderColor: '#ef4444', color: '#ef4444', padding: '0.25rem 0.5rem', fontSize: '0.8rem', display: 'flex', gap: '0.25rem', alignItems: 'center' }}
+                        >
+                          <Trash size={12} />
+                          <span>刪除案例</span>
+                        </button>
+                      </div>
+                      <div className="admin-grid">
+                        <div className="form-group">
+                          <label>實績名稱/標題</label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            value={c.title || ''}
+                            onChange={(e) => {
+                              const newCases = [...(localData.home.cases || [])];
+                              newCases[index].title = e.target.value;
+                              setLocalData(prev => ({ ...prev, home: { ...prev.home, cases: newCases } }));
+                            }}
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label>施工類別 (如：大樓清潔、飯店日常保養)</label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            value={c.category || ''}
+                            onChange={(e) => {
+                              const newCases = [...(localData.home.cases || [])];
+                              newCases[index].category = e.target.value;
+                              setLocalData(prev => ({ ...prev, home: { ...prev.home, cases: newCases } }));
+                            }}
+                          />
+                        </div>
+                        <div className="form-group admin-grid-full">
+                          <label>實績案例圖片 (建議橫幅照片，自動壓縮為 JPEG)</label>
+                          <div className="image-upload-zone" onClick={() => document.getElementById(`caseUpload-${index}`).click()}>
+                            <Info size={24} style={{ color: 'var(--text-muted)' }} />
+                            <span>點擊上傳實績照片自動轉 Base64 儲存</span>
+                            <input
+                              type="file"
+                              id={`caseUpload-${index}`}
+                              style={{ display: 'none' }}
+                              accept="image/*"
+                              onChange={(e) => handleImageUpload(['home', 'cases', index, 'image'], e.target.files[0])}
+                            />
+                            {c.image && (
+                              <img src={c.image} alt="Case Preview" className="image-preview-thumbnail" />
+                            )}
+                          </div>
+                        </div>
+                        <div className="form-group admin-grid-full" style={{ marginBottom: 0 }}>
+                          <label>施工詳細說明</label>
+                          <textarea
+                            className="form-control"
+                            style={{ minHeight: '60px' }}
+                            value={c.description || ''}
+                            onChange={(e) => {
+                              const newCases = [...(localData.home.cases || [])];
+                              newCases[index].description = e.target.value;
+                              setLocalData(prev => ({ ...prev, home: { ...prev.home, cases: newCases } }));
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* 客戶口碑見證管理 (NEW) */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '2.5rem', marginBottom: '1rem' }}>
+                  <h3 style={{ fontSize: '1.15rem', color: 'var(--primary-color)', margin: 0 }}>
+                    客戶口碑見證 (Client Testimonials)
+                  </h3>
+                  <button
+                    onClick={handleAddTestimonial}
+                    className="btn btn-secondary"
+                    style={{ padding: '0.4rem 1rem', fontSize: '0.85rem', display: 'flex', gap: '0.25rem', alignItems: 'center' }}
+                  >
+                    <Plus size={14} />
+                    <span>新增客戶見證</span>
+                  </button>
+                </div>
+                <div>
+                  {(localData.home.testimonials || []).map((t, index) => (
+                    <div key={index} className="admin-list-item">
+                      <div className="admin-list-item-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span className="admin-badge">口碑評價 {index + 1}</span>
+                        <button
+                          onClick={() => handleDeleteTestimonial(index)}
+                          className="btn btn-outline"
+                          style={{ borderColor: '#ef4444', color: '#ef4444', padding: '0.25rem 0.5rem', fontSize: '0.8rem', display: 'flex', gap: '0.25rem', alignItems: 'center' }}
+                        >
+                          <Trash size={12} />
+                          <span>刪除見證</span>
+                        </button>
+                      </div>
+                      <div className="admin-grid">
+                        <div className="form-group">
+                          <label>客戶姓名/稱呼 (例如：張經理)</label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            value={t.name || ''}
+                            onChange={(e) => {
+                              const newTestimonials = [...(localData.home.testimonials || [])];
+                              newTestimonials[index].name = e.target.value;
+                              setLocalData(prev => ({ ...prev, home: { ...prev.home, testimonials: newTestimonials } }));
+                            }}
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label>職稱 (例如：主任委員、房務部協理)</label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            value={t.role || ''}
+                            onChange={(e) => {
+                              const newTestimonials = [...(localData.home.testimonials || [])];
+                              newTestimonials[index].role = e.target.value;
+                              setLocalData(prev => ({ ...prev, home: { ...prev.home, testimonials: newTestimonials } }));
+                            }}
+                          />
+                        </div>
+                        <div className="form-group admin-grid-full">
+                          <label>公司或大樓名稱</label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            value={t.company || ''}
+                            onChange={(e) => {
+                              const newTestimonials = [...(localData.home.testimonials || [])];
+                              newTestimonials[index].company = e.target.value;
+                              setLocalData(prev => ({ ...prev, home: { ...prev.home, testimonials: newTestimonials } }));
+                            }}
+                          />
+                        </div>
+                        <div className="form-group admin-grid-full" style={{ marginBottom: 0 }}>
+                          <label>好評回饋詳細文字</label>
+                          <textarea
+                            className="form-control"
+                            style={{ minHeight: '60px' }}
+                            value={t.feedback || ''}
+                            onChange={(e) => {
+                              const newTestimonials = [...(localData.home.testimonials || [])];
+                              newTestimonials[index].feedback = e.target.value;
+                              setLocalData(prev => ({ ...prev, home: { ...prev.home, testimonials: newTestimonials } }));
+                            }}
+                          />
+                        </div>
                       </div>
                     </div>
                   ))}

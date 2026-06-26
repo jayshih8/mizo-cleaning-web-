@@ -1,7 +1,7 @@
 import React from 'react';
-import { Award, Zap, ShieldCheck, BookOpen, ArrowRight } from 'lucide-react';
+import { Award, Zap, ShieldCheck, BookOpen, ArrowRight, Star, MessageSquare } from 'lucide-react';
 
-export default function Home({ homeData, companyInfo, setActiveTab }) {
+export default function Home({ homeData, companyInfo, servicesData, setActiveTab }) {
   const getIcon = (index) => {
     switch (index) {
       case 0: return <Award size={24} />;
@@ -14,6 +14,26 @@ export default function Home({ homeData, companyInfo, setActiveTab }) {
 
   const bannerStyle = {
     backgroundImage: `url(${homeData.heroBanner || 'images/banner_building.png'})`,
+  };
+
+  // Navigate to specific service
+  const handleGoToService = (serviceId) => {
+    sessionStorage.setItem('mizo_scroll_to_service', serviceId);
+    setActiveTab('services');
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  };
+
+  // Helper to determine service image
+  const getServiceImage = (service) => {
+    if (!service) return 'images/banner_building.png';
+    if (service.image) return service.image;
+    switch (service.id) {
+      case 'building-factory': return 'images/banner_building.png';
+      case 'hotel-cleaning': return 'images/hotel.jpg';
+      case 'office-cleaning': return 'images/history.jpg';
+      case 'hospital-cleaning': return 'images/training.jpg';
+      default: return 'images/banner_building.png';
+    }
   };
 
   return (
@@ -68,7 +88,7 @@ export default function Home({ homeData, companyInfo, setActiveTab }) {
                 我們與日本東京美裝興業株式會社開展長期的技術合作，引進精密清潔維護工法。不論是挑高辦公室、精密半導體廠房，或是對衛生要求極其嚴苛的綜合醫院，我們均依循日式細步 SOP 清潔流程。
               </p>
               <p style={{ color: 'var(--text-muted)', marginBottom: '2rem', lineHeight: '1.8' }}>
-                每一個項目、每一處死角，皆有領班現場雙重查核。我們更重視施工現場的職業安全健康，依法設置甲種安衛主管，配備完整勞安護具，提供您零風險、高品質的清潔管理。
+                每一個項目、每一處死角，皆有領班現場雙重查核。我們更重視施工現場的職業安全健康，依法設置甲種安衛主管，配備完整勞安護具，提供您零風險、高品質認證的清潔管理。
               </p>
               <div style={{ display: 'flex', gap: '1rem' }}>
                 <button onClick={() => setActiveTab('about')} className="btn btn-primary">關於我們</button>
@@ -108,6 +128,135 @@ export default function Home({ homeData, companyInfo, setActiveTab }) {
           </div>
         </div>
       </section>
+
+      {/* NEW: Services Overview Section */}
+      {servicesData && servicesData.items && servicesData.items.length > 0 && (
+        <section className="section-padding bg-light" id="services-overview">
+          <div className="container">
+            <div className="section-title-container">
+              <h2 className="section-title">專業清潔服務範疇</h2>
+              <p className="section-subtitle">引進日式高標準工法，滿足您對極致整潔與勞安規範的需求</p>
+            </div>
+            
+            <div className="grid-3" style={{ gap: '2rem' }}>
+              {servicesData.items.slice(0, 3).map((item) => (
+                <div key={item.id} className="home-service-card animate-fade-in" style={{ backgroundColor: 'white', borderRadius: 'var(--radius-md)', overflow: 'hidden', boxShadow: 'var(--shadow-sm)', border: '1px solid #f1f5f9' }}>
+                  <div style={{ height: '200px', backgroundImage: `url(${getServiceImage(item)})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
+                  <div style={{ padding: '2rem' }}>
+                    <h3 style={{ fontSize: '1.25rem', marginBottom: '0.75rem', color: 'var(--primary-color)' }}>{item.title}</h3>
+                    <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: '1.6', minHeight: '80px', marginBottom: '1.5rem' }}>
+                      {item.description && item.description.length > 80 ? `${item.description.substring(0, 80)}...` : item.description}
+                    </p>
+                    <button onClick={() => handleGoToService(item.id)} className="btn btn-outline" style={{ width: '100%', fontSize: '0.85rem', padding: '0.5rem 1rem' }}>
+                      <span>了解詳細細項</span>
+                      <ArrowRight size={14} style={{ marginLeft: '0.25rem' }} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            <div style={{ textAlign: 'center', marginTop: '3rem' }}>
+              <button onClick={() => setActiveTab('services')} className="btn btn-primary" style={{ padding: '0.75rem 2.5rem' }}>
+                查看所有服務項目
+              </button>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* NEW: Recent Cases Showcase Section */}
+      {homeData.cases && homeData.cases.length > 0 && (
+        <section className="section-padding" id="cases" style={{ backgroundColor: 'white' }}>
+          <div className="container">
+            <div className="section-title-container">
+              <h2 className="section-title">近期施工實績</h2>
+              <p className="section-subtitle">累積各大商辦大樓、五星級飯店與科技廠房的標竿清潔案例</p>
+            </div>
+            
+            <div className="grid-3" style={{ gap: '2rem' }}>
+              {homeData.cases.map((c, idx) => (
+                <div key={idx} className="case-card" style={{ display: 'flex', flexDirection: 'column', borderRadius: 'var(--radius-lg)', overflow: 'hidden', boxShadow: 'var(--shadow-md)', backgroundColor: '#fff', border: '1px solid #e2e8f0', transition: 'transform 0.3s ease' }}>
+                  <div className="case-image-wrapper" style={{ height: '240px', overflow: 'hidden', position: 'relative' }}>
+                    <img
+                      src={c.image || 'images/banner_building.png'}
+                      alt={c.title}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.3s ease' }}
+                    />
+                    <span style={{ position: 'absolute', top: '1rem', left: '1rem', backgroundColor: 'var(--primary-color)', color: '#fff', fontSize: '0.75rem', fontWeight: '700', padding: '0.35rem 0.75rem', borderRadius: 'var(--radius-sm)', backdropFilter: 'blur(4px)', boxShadow: 'var(--shadow-sm)' }}>
+                      {c.category}
+                    </span>
+                  </div>
+                  <div style={{ padding: '1.75rem', flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+                    <h3 style={{ fontSize: '1.15rem', color: 'var(--primary-color)', marginBottom: '0.75rem', fontWeight: '700' }}>
+                      {c.title}
+                    </h3>
+                    <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', lineHeight: '1.6', margin: 0 }}>
+                      {c.description}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* NEW: Client Testimonials Section */}
+      {homeData.testimonials && homeData.testimonials.length > 0 && (
+        <section className="section-padding" id="testimonials" style={{ background: 'linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%)', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0' }}>
+          <div className="container">
+            <div className="section-title-container">
+              <h2 className="section-title">客戶口碑好評</h2>
+              <p className="section-subtitle">企業經理、廠房主管與管委會委員對美裝日規清潔服務的真實評價</p>
+            </div>
+            
+            <div className="grid-3" style={{ gap: '2rem' }}>
+              {homeData.testimonials.map((t, idx) => (
+                <div key={idx} className="testimonial-card animate-fade-in" style={{ backgroundColor: 'white', padding: '2.25rem', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-premium)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative', border: '1px solid rgba(11,28,61,0.03)' }}>
+                  
+                  {/* Quote icon markup */}
+                  <div style={{ position: 'absolute', top: '1.5rem', right: '2rem', opacity: 0.08, color: 'var(--primary-color)' }}>
+                    <MessageSquare size={48} />
+                  </div>
+                  
+                  <div>
+                    {/* Stars */}
+                    <div style={{ display: 'flex', gap: '0.2rem', marginBottom: '1.25rem', color: '#f59e0b' }}>
+                      <Star size={16} fill="#f59e0b" />
+                      <Star size={16} fill="#f59e0b" />
+                      <Star size={16} fill="#f59e0b" />
+                      <Star size={16} fill="#f59e0b" />
+                      <Star size={16} fill="#f59e0b" />
+                    </div>
+                    
+                    {/* Feedback content */}
+                    <p style={{ fontStyle: 'normal', color: 'var(--text-body)', fontSize: '0.925rem', lineHeight: '1.8', marginBottom: '1.75rem', position: 'relative', zIndex: 1 }}>
+                      「{t.feedback}」
+                    </p>
+                  </div>
+                  
+                  {/* User info */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', borderTop: '1px solid #f1f5f9', paddingTop: '1.25rem', marginTop: 'auto' }}>
+                    <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'rgba(11,28,61,0.05)', color: 'var(--primary-color)', display: 'flex', alignItems: 'center', justifyContext: 'center', justifyContent: 'center', fontSize: '1rem', fontWeight: '700' }}>
+                      {t.name[0] || '客'}
+                    </div>
+                    <div>
+                      <h4 style={{ margin: 0, fontSize: '0.9rem', color: 'var(--primary-color)', fontWeight: '700' }}>
+                        {t.name} <span style={{ fontWeight: 'normal', fontSize: '0.8rem', color: 'var(--text-muted)' }}>{t.role}</span>
+                      </h4>
+                      <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--secondary-color)', fontWeight: '600' }}>
+                        {t.company}
+                      </p>
+                    </div>
+                  </div>
+                  
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Stats Counter Section */}
       <section className="stats-section">

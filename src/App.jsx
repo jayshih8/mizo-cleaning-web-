@@ -217,7 +217,7 @@ export default function App() {
   const renderContent = () => {
     switch (activeTab) {
       case 'home':
-        return <Home homeData={config.home} companyInfo={config.company} setActiveTab={setActiveTab} />;
+        return <Home homeData={config.home} companyInfo={config.company} servicesData={config.services} setActiveTab={setActiveTab} />;
       case 'about':
         return <About aboutData={config.about} />;
       case 'services':

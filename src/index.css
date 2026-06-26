@@ -1471,4 +1471,73 @@ textarea.form-control {
   to { transform: rotate(360deg); }
 }
 
+/* Home Page Enrichment Sections & RWD Hover Styling */
+
+.home-service-card {
+  transition: var(--transition-smooth) !important;
+}
+
+.home-service-card:hover {
+  transform: translateY(-6px) !important;
+  box-shadow: var(--shadow-premium) !important;
+  border-color: rgba(13, 148, 136, 0.2) !important;
+}
+
+.home-service-card:hover .btn-outline {
+  background-color: var(--primary-color) !important;
+  color: white !important;
+  border-color: var(--primary-color) !important;
+}
+
+.case-card {
+  transition: var(--transition-smooth) !important;
+}
+
+.case-card:hover {
+  transform: translateY(-8px) !important;
+  box-shadow: var(--shadow-premium) !important;
+  border-color: rgba(13, 148, 136, 0.2) !important;
+}
+
+.case-card:hover img {
+  transform: scale(1.08) !important;
+}
+
+.case-image-wrapper::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, rgba(11, 28, 61, 0) 65%, rgba(11, 28, 61, 0.3) 100%);
+  opacity: 0;
+  transition: var(--transition-smooth);
+  pointer-events: none;
+}
+
+.case-card:hover .case-image-wrapper::after {
+  opacity: 1;
+}
+
+.testimonial-card {
+  transition: var(--transition-smooth) !important;
+}
+
+.testimonial-card:hover {
+  transform: translateY(-6px) !important;
+  box-shadow: 0 25px 35px -10px rgba(11, 28, 61, 0.1), 0 10px 20px -10px rgba(11, 28, 61, 0.05) !important;
+  border-color: rgba(13, 148, 136, 0.15) !important;
+}
+
+.testimonial-card svg {
+  transition: var(--transition-smooth);
+}
+
+.testimonial-card:hover svg {
+  transform: scale(1.1);
+  color: var(--secondary-color) !important;
+}
+
+
 
