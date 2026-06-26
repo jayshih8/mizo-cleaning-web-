@@ -36,6 +36,13 @@ export default function App() {
 
   // Monitor pathname changes (popstate event for browser back/forward buttons)
   useEffect(() => {
+    // Print styled signature to browser developer console
+    console.log(
+      '%c網頁設計：YUNG CHANG %chttps://www.facebook.com/YungChangShih',
+      'color: #0ea5e9; font-weight: bold; font-size: 13px; font-family: system-ui, -apple-system, sans-serif; padding: 4px 0;',
+      'color: #64748b; font-size: 12px; font-family: system-ui, -apple-system, sans-serif; padding: 4px 0; margin-left: 8px;'
+    );
+
     const handleLocationChange = () => {
       const tab = getTabFromPath(window.location.pathname);
       setActiveTab(tab);

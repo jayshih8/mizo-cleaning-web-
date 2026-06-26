@@ -1,0 +1,11 @@
+/* TEAM */
+Web Designer & Developer: YUNG CHANG
+Facebook: https://www.facebook.com/YungChangShih
+
+/* THANKS */
+Client: 美裝公寓大廈管理維護股份有限公司
+
+/* SITE */
+Last update: 2026/06/26
+Standards: HTML5, CSS3, ES6+, React, Vite, TailwindCSS (for some layers)
+Software: Antigravity IDE
