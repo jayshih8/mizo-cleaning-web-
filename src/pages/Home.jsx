@@ -140,14 +140,14 @@ export default function Home({ homeData, companyInfo, servicesData, setActiveTab
             
             <div className="grid-3" style={{ gap: '2rem' }}>
               {servicesData.items.slice(0, 3).map((item) => (
-                <div key={item.id} className="home-service-card animate-fade-in" style={{ backgroundColor: 'white', borderRadius: 'var(--radius-md)', overflow: 'hidden', boxShadow: 'var(--shadow-sm)', border: '1px solid #f1f5f9' }}>
+                <div key={item.id} className="home-service-card animate-fade-in" style={{ display: 'flex', flexDirection: 'column', backgroundColor: 'white', borderRadius: 'var(--radius-md)', overflow: 'hidden', boxShadow: 'var(--shadow-sm)', border: '1px solid #f1f5f9' }}>
                   <div style={{ height: '200px', backgroundImage: `url(${getServiceImage(item)})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
-                  <div style={{ padding: '2rem' }}>
+                  <div style={{ padding: '2rem', flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
                     <h3 style={{ fontSize: '1.25rem', marginBottom: '0.75rem', color: 'var(--primary-color)' }}>{item.title}</h3>
                     <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: '1.6', minHeight: '80px', marginBottom: '1.5rem' }}>
                       {item.description && item.description.length > 80 ? `${item.description.substring(0, 80)}...` : item.description}
                     </p>
-                    <button onClick={() => handleGoToService(item.id)} className="btn btn-outline" style={{ width: '100%', fontSize: '0.85rem', padding: '0.5rem 1rem' }}>
+                    <button onClick={() => handleGoToService(item.id)} className="btn btn-outline" style={{ width: '100%', fontSize: '0.85rem', padding: '0.5rem 1rem', marginTop: 'auto' }}>
                       <span>了解詳細細項</span>
                       <ArrowRight size={14} style={{ marginLeft: '0.25rem' }} />
                     </button>
