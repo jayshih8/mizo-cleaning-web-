@@ -334,7 +334,7 @@ function AnimatedCounter({ value }) {
       return;
     }
 
-    const duration = 1200; // Animation duration in ms
+    const duration = 2000; // Animation duration in ms (slower)
     const frameRate = 1000 / 60; // 60 FPS
     const totalFrames = Math.round(duration / frameRate);
     let frame = 0;
