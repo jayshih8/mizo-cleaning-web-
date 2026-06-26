@@ -20,7 +20,6 @@ export default function Home({ homeData, companyInfo, servicesData, setActiveTab
   const handleGoToService = (serviceId) => {
     sessionStorage.setItem('mizo_scroll_to_service', serviceId);
     setActiveTab('services');
-    window.scrollTo({ top: 0, behavior: 'instant' });
   };
 
   // Helper to determine service image

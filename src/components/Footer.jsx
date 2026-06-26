@@ -4,7 +4,6 @@ import { Phone, Mail, MapPin, Printer, Clock } from 'lucide-react';
 export default function Footer({ setActiveTab, companyInfo }) {
   const handleLinkClick = (tabId) => {
     setActiveTab(tabId);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (

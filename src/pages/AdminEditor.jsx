@@ -495,7 +495,6 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
           <button
             onClick={() => {
               setActiveTab('home');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
             className="btn btn-outline"
             style={{ width: '100%', marginTop: '1rem', padding: '0.85rem', borderColor: '#ccc', color: 'var(--text-muted)' }}
@@ -535,7 +534,6 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
                 sessionStorage.removeItem('mizo_admin_auth');
                 setIsAuthenticated(false);
                 setActiveTab('home');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
               className="btn btn-outline"
               style={{ borderColor: 'var(--primary-color)', color: 'var(--primary-color)' }}

@@ -60,6 +60,11 @@ export default function App() {
     }
   }, [activeTab]);
 
+  // Scroll to top of the page when activeTab changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [activeTab]);
+
   // Load configuration from localStorage if edit session exists, fallback to imported json
   const [config, setConfig] = useState(() => {
     try {
