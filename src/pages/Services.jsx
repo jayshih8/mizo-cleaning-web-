@@ -41,7 +41,8 @@ export default function Services({ servicesData }) {
   };
 
   return (
-    <div className="section-padding animate-fade-in">
+    <>
+      <div className="section-padding animate-fade-in">
       <div className="container">
         {/* Page Title */}
         <div className="section-title-container">
@@ -140,5 +141,6 @@ export default function Services({ servicesData }) {
         </div>
       </section>
     )}
+    </>
   );
 }
