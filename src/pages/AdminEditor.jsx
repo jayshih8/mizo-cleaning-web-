@@ -1493,21 +1493,41 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
                     <div className="admin-list-item-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                         <span className="admin-badge" style={{ backgroundColor: 'var(--secondary-color)' }}>{service.title || '新服務項目'}</span>
-                        {localData.services.featuredServiceId === service.id ? (
-                          <span className="admin-badge" style={{ backgroundColor: '#f59e0b', color: '#fff', fontSize: '0.75rem', fontWeight: '700', padding: '0.2rem 0.5rem', borderRadius: 'var(--radius-sm)' }}>
-                            ★ 目前精選實績 Case Study
-                          </span>
+                        {((localData.services.featuredServiceIds || []).includes(service.id)) ? (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                            <span className="admin-badge" style={{ backgroundColor: '#f59e0b', color: '#fff', fontSize: '0.75rem', fontWeight: '700', padding: '0.2rem 0.5rem', borderRadius: 'var(--radius-sm)' }}>
+                              ★ 精選實績
+                            </span>
+                            <button
+                              onClick={() => {
+                                const newIds = (localData.services.featuredServiceIds || []).filter(id => id !== service.id);
+                                setLocalData(prev => ({
+                                  ...prev,
+                                  services: {
+                                    ...prev.services,
+                                    featuredServiceIds: newIds
+                                  }
+                                }));
+                                showToast(`已取消「${service.title}」的精選實績設定！`);
+                              }}
+                              className="btn btn-outline"
+                              style={{ padding: '0.15rem 0.5rem', fontSize: '0.7rem', borderColor: '#ef4444', color: '#ef4444' }}
+                            >
+                              取消精選
+                            </button>
+                          </div>
                         ) : (
                           <button
                             onClick={() => {
+                              const newIds = [...(localData.services.featuredServiceIds || []), service.id];
                               setLocalData(prev => ({
                                 ...prev,
                                 services: {
                                   ...prev.services,
-                                  featuredServiceId: service.id
+                                  featuredServiceIds: newIds
                                 }
                               }));
-                              showToast(`已將「${service.title}」設為精選合作實績！`);
+                              showToast(`已將「${service.title}」設為精選實績！`);
                             }}
                             className="btn btn-outline"
                             style={{ padding: '0.15rem 0.5rem', fontSize: '0.7rem', borderColor: 'var(--secondary-color)', color: 'var(--secondary-color)' }}

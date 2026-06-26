@@ -186,7 +186,10 @@
         ]
       }
     ],
-    "featuredServiceId": "hotel-cleaning"
+    "featuredServiceId": "hotel-cleaning",
+    "featuredServiceIds": [
+      "hotel-cleaning"
+    ]
   },
   "credentials": {
     "title": "專業證照與榮譽",

@@ -23,7 +23,9 @@ export default function Services({ servicesData }) {
 
   const activeService = servicesData.items.find(item => item.id === activeServiceId) || servicesData.items[0];
 
-  const featuredService = servicesData.items.find(item => item.id === servicesData.featuredServiceId) || servicesData.items.find(item => item.id === 'hotel-cleaning') || servicesData.items[0];
+  const featuredIds = servicesData.featuredServiceIds || (servicesData.featuredServiceId ? [servicesData.featuredServiceId] : ['hotel-cleaning']);
+  const featuredServices = servicesData.items.filter(item => featuredIds.includes(item.id));
+  const displayFeatured = featuredServices.length > 0 ? featuredServices : [servicesData.items[0]];
 
   // Helper to determine service image
   const getServiceImage = (service) => {
@@ -95,10 +97,10 @@ export default function Services({ servicesData }) {
         )}
 
         {/* Additional information on Fuhua Le Meridien hotel case */}
-        {featuredService && (
-          <div style={{ marginTop: '5rem', backgroundColor: 'white', borderRadius: 'var(--radius-lg)', padding: '3.5rem', boxShadow: 'var(--shadow-premium)' }}>
-            <div className="grid-2" style={{ alignItems: 'center' }}>
-              <div>
+        {displayFeatured.map((featuredService, idx) => (
+          <div key={featuredService.id} style={{ marginTop: idx === 0 ? '5rem' : '3.5rem', backgroundColor: 'white', borderRadius: 'var(--radius-lg)', padding: '3.5rem', boxShadow: 'var(--shadow-premium)' }}>
+            <div className="grid-2" style={{ alignItems: 'center', direction: idx % 2 === 1 ? 'rtl' : 'ltr' }}>
+              <div style={{ direction: 'ltr' }}>
                 <span style={{ fontSize: '0.85rem', fontWeight: '700', color: 'var(--secondary-color)', letterSpacing: '1px', textTransform: 'uppercase' }}>
                   精選合作實績 Case Study
                 </span>
@@ -125,7 +127,7 @@ export default function Services({ servicesData }) {
               </div>
             </div>
           </div>
-        )}
+        ))}
       </div>
     </div>
   );
