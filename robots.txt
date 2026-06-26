@@ -1,4 +1,6 @@
 User-agent: *
 Allow: /
+Disallow: /admin-portal
+Disallow: /admin
 
 Sitemap: https://jayshih8.github.io/mizo-cleaning-web-/sitemap.xml
