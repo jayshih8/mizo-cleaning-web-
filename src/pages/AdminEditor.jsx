@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Save, Download, RotateCcw, AlertTriangle, FileText, Info, Plus, Trash, LogOut, Rocket, Settings, CheckCircle2, XCircle, Loader } from 'lucide-react';
+import { Save, Download, RotateCcw, AlertTriangle, FileText, Info, Plus, Trash, LogOut, Rocket, Settings, CheckCircle2, XCircle, Loader, Upload } from 'lucide-react';
 
 export default function AdminEditor({ configData, onSave, onReset, setActiveTab }) {
   const [localData, setLocalData] = useState(JSON.parse(JSON.stringify(configData)));
@@ -142,12 +142,36 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
   };
 
   const handleReset = () => {
-    if (window.confirm('確定要還原成專案的預設設定嗎？未下載的修改將會遺失。')) {
+    if (window.confirm('確定要捨棄目前所有修改，還原成官網目前發布的最新版本嗎？')) {
       onReset();
       // Reload page to refresh state or let state bubble up
-      showToast('已重設為專案預設值！');
+      showToast('已還原至官網發布版本！');
       setTimeout(() => window.location.reload(), 1000);
     }
+  };
+
+  const handleImport = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      try {
+        const parsed = JSON.parse(evt.target.result);
+        
+        // Simple schema validation to ensure it has key sections
+        if (!parsed.company || !parsed.home || !parsed.about || !parsed.services) {
+          throw new Error('設定檔格式不正確，缺少必要的主頁面欄位！');
+        }
+
+        setLocalData(parsed);
+        showToast('✅ 設定檔匯入成功！請點擊右上角「即時套用」以預覽，或點擊「發布至官網」完成發布。');
+      } catch (err) {
+        alert(`匯入失敗：${err.message}`);
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = ''; // Reset file input
   };
 
   const handleDownload = () => {
@@ -310,9 +334,25 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
               <Download size={16} />
               <span>下載設定檔</span>
             </button>
-            <button onClick={handleReset} className="btn btn-outline" style={{ borderColor: '#ef4444', color: '#ef4444' }} title="還原至專案初始預設">
+            <button
+              onClick={() => document.getElementById('importConfigInput').click()}
+              className="btn btn-outline"
+              style={{ borderColor: 'var(--secondary-color)', color: 'var(--secondary-color)' }}
+              title="匯入先前備份的 contentConfig.json 設定檔"
+            >
+              <Upload size={16} />
+              <span>匯入設定檔</span>
+            </button>
+            <input
+              type="file"
+              id="importConfigInput"
+              accept=".json"
+              style={{ display: 'none' }}
+              onChange={handleImport}
+            />
+            <button onClick={handleReset} className="btn btn-outline" style={{ borderColor: '#ef4444', color: '#ef4444' }} title="捨棄所有本機修改，還原至官網發布的版本">
               <RotateCcw size={16} />
-              <span>還原預設</span>
+              <span>還原已發布版</span>
             </button>
           </div>
         </div>
