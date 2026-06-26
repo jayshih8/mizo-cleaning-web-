@@ -264,7 +264,7 @@ export default function Home({ homeData, companyInfo, servicesData, setActiveTab
           <div className="grid-4">
             {homeData.stats && homeData.stats.map((stat, index) => (
               <div key={index} className="stat-item">
-                <h2>{stat.number}</h2>
+                <h2><AnimatedCounter value={stat.number} /></h2>
                 <p>{stat.label}</p>
               </div>
             ))}
@@ -290,5 +290,91 @@ export default function Home({ homeData, companyInfo, servicesData, setActiveTab
         </div>
       </section>
     </div>
+  );
+}
+
+// Custom animated count-up component with Viewport Intersection Observer
+function AnimatedCounter({ value }) {
+  const [count, setCount] = React.useState(0);
+  const [isVisible, setIsVisible] = React.useState(false);
+  const elementRef = React.useRef(null);
+
+  React.useEffect(() => {
+    // Check if IntersectionObserver is supported
+    if (typeof IntersectionObserver === 'undefined') {
+      setIsVisible(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.unobserve(entry.target);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (elementRef.current) {
+      observer.observe(elementRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  React.useEffect(() => {
+    if (!isVisible) return;
+
+    const numberStr = value.replace(/[^0-9]/g, '');
+    const target = parseInt(numberStr, 10);
+    
+    if (isNaN(target)) {
+      setCount(value);
+      return;
+    }
+
+    const duration = 1200; // Animation duration in ms
+    const frameRate = 1000 / 60; // 60 FPS
+    const totalFrames = Math.round(duration / frameRate);
+    let frame = 0;
+
+    const timer = setInterval(() => {
+      frame++;
+      const progress = frame / totalFrames;
+      // easeOutExpo formula
+      const easeProgress = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+      const currentCount = Math.round(easeProgress * target);
+
+      setCount(currentCount);
+
+      if (frame >= totalFrames) {
+        clearInterval(timer);
+        setCount(target);
+      }
+    }, frameRate);
+
+    return () => clearInterval(timer);
+  }, [value, isVisible]);
+
+  // If not yet visible, render starting at 0
+  const numberStr = value.replace(/[^0-9]/g, '');
+  const target = parseInt(numberStr, 10);
+  if (isNaN(target)) {
+    return <span>{value}</span>;
+  }
+
+  const isPercent = value.includes('%');
+  const isPlus = value.includes('+');
+  const isH = value.includes('H') || value.includes('h');
+  const formattedCount = isVisible ? (value.includes(',') ? count.toLocaleString('en-US') : count) : 0;
+
+  return (
+    <span ref={elementRef}>
+      {formattedCount}
+      {isPercent && '%'}
+      {isPlus && '+'}
+      {isH && 'H'}
+    </span>
   );
 }
