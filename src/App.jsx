@@ -126,7 +126,7 @@ export default function App() {
       contact: `聯絡我們 | ${baseTitle}`,
       admin: `管理後台 | ${config?.company?.logoText || baseTitle}`
     };
-    
+
     const pageTitle = tabTitles[activeTab] || baseTitle;
     // Set page title
     document.title = pageTitle;
@@ -139,7 +139,7 @@ export default function App() {
         metaDesc.name = 'description';
         document.getElementsByTagName('head')[0].appendChild(metaDesc);
       }
-      
+
       const tabDescriptions = {
         home: `美裝公寓大廈管理維護股份有限公司創立於 1979 年中日合資技術合作，引進日本東京美裝興業高標準 SOP，為大型工廠、商辦大樓、國際飯店與大型醫院提供極致品質與職業安全雙重合規的清潔維護服務。`,
         about: `了解美裝公寓大廈管理維護股份有限公司的經營理念與發展沿革。我們引進日式精密工法與嚴格的員工安全教育培訓，提供頂級的清潔管理服務。`,
@@ -303,14 +303,14 @@ export default function App() {
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       {/* Header Navigation */}
       <Header activeTab={activeTab} setActiveTab={setActiveTab} companyInfo={config.company} />
-      
+
       {/* Main content router viewport */}
       <main style={{ flexGrow: 1 }}>
         {renderContent()}
       </main>
 
       {/* Footer Details */}
-      <Footer setActiveTab={setActiveTab} companyInfo={config.company} />
+      <Footer activeTab={activeTab} setActiveTab={setActiveTab} companyInfo={config.company} />
 
       {/* Floating Widget Action Panel */}
       <FloatingWidget companyInfo={config.company} />

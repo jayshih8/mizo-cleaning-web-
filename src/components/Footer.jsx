@@ -1,9 +1,13 @@
 import React from 'react';
 import { Phone, Mail, MapPin, Printer, Clock } from 'lucide-react';
 
-export default function Footer({ setActiveTab, companyInfo }) {
+export default function Footer({ activeTab, setActiveTab, companyInfo }) {
   const handleLinkClick = (tabId) => {
-    setActiveTab(tabId);
+    if (activeTab === tabId) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      setActiveTab(tabId);
+    }
   };
 
   return (

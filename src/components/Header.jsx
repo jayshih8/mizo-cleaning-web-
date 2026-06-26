@@ -14,7 +14,11 @@ export default function Header({ activeTab, setActiveTab, companyInfo }) {
   ];
 
   const handleNavClick = (tabId) => {
-    setActiveTab(tabId);
+    if (activeTab === tabId) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      setActiveTab(tabId);
+    }
     setIsOpen(false);
   };
 
