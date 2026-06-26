@@ -23,6 +23,8 @@ export default function Services({ servicesData }) {
 
   const activeService = servicesData.items.find(item => item.id === activeServiceId) || servicesData.items[0];
 
+  const featuredService = servicesData.items.find(item => item.id === servicesData.featuredServiceId) || servicesData.items.find(item => item.id === 'hotel-cleaning') || servicesData.items[0];
+
   // Helper to determine service image
   const getServiceImage = (service) => {
     if (!service) return 'images/banner_building.png';
@@ -93,39 +95,37 @@ export default function Services({ servicesData }) {
         )}
 
         {/* Additional information on Fuhua Le Meridien hotel case */}
-        <div style={{ marginTop: '5rem', backgroundColor: 'white', borderRadius: 'var(--radius-lg)', padding: '3.5rem', boxShadow: 'var(--shadow-premium)' }}>
-          <div className="grid-2" style={{ alignItems: 'center' }}>
-            <div>
-              <span style={{ fontSize: '0.85rem', fontWeight: '700', color: 'var(--secondary-color)', letterSpacing: '1px', textTransform: 'uppercase' }}>
-                精選合作實績 Case Study
-              </span>
-              <h2 style={{ fontSize: '1.75rem', color: 'var(--primary-color)', marginTop: '0.5rem', marginBottom: '1.25rem' }}>
-                馥華艾美酒店清潔維護專案
-              </h2>
-              <p style={{ color: 'var(--text-muted)', lineHeight: '1.75', marginBottom: '1.5rem' }}>
-                承襲日本大廈維護的嚴苛工法，我們為馥華艾美酒店提供全方位的公共區域保養、地坪晶化、大理石拋光以及精細客房維護服務。
-              </p>
-              <ul className="service-features-list" style={{ marginBottom: '1.5rem' }}>
-                <li style={{ fontSize: '0.95rem' }}>
-                  <CheckCircle2 size={16} /> <span>24 小時飯店公共區域動態清潔巡檢</span>
-                </li>
-                <li style={{ fontSize: '0.95rem' }}>
-                  <CheckCircle2 size={16} /> <span>高檔大理石地面硬化與鏡面晶化處理</span>
-                </li>
-                <li style={{ fontSize: '0.95rem' }}>
-                  <CheckCircle2 size={16} /> <span>符合國際頂級飯店衛生的無死角消毒程序</span>
-                </li>
-              </ul>
-            </div>
-            <div style={{ borderRadius: 'var(--radius-md)', overflow: 'hidden', boxShadow: 'var(--shadow-md)', height: '280px' }}>
-              <img
-                src="images/hotel.jpg"
-                alt="馥華艾美酒店實績"
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
+        {featuredService && (
+          <div style={{ marginTop: '5rem', backgroundColor: 'white', borderRadius: 'var(--radius-lg)', padding: '3.5rem', boxShadow: 'var(--shadow-premium)' }}>
+            <div className="grid-2" style={{ alignItems: 'center' }}>
+              <div>
+                <span style={{ fontSize: '0.85rem', fontWeight: '700', color: 'var(--secondary-color)', letterSpacing: '1px', textTransform: 'uppercase' }}>
+                  精選合作實績 Case Study
+                </span>
+                <h2 style={{ fontSize: '1.75rem', color: 'var(--primary-color)', marginTop: '0.5rem', marginBottom: '1.25rem' }}>
+                  {featuredService.title}專案
+                </h2>
+                <p style={{ color: 'var(--text-muted)', lineHeight: '1.75', marginBottom: '1.5rem' }}>
+                  {featuredService.description}
+                </p>
+                <ul className="service-features-list" style={{ marginBottom: '1.5rem' }}>
+                  {featuredService.features && featuredService.features.map((feat, index) => (
+                    <li key={index} style={{ fontSize: '0.95rem' }}>
+                      <CheckCircle2 size={16} /> <span>{feat}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div style={{ borderRadius: 'var(--radius-md)', overflow: 'hidden', boxShadow: 'var(--shadow-md)', height: '280px' }}>
+                <img
+                  src={getServiceImage(featuredService)}
+                  alt={featuredService.title}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

@@ -1490,8 +1490,32 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
                 
                 {localData.services.items.map((service, index) => (
                   <div key={service.id} className="admin-list-item">
-                    <div className="admin-list-item-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span className="admin-badge" style={{ backgroundColor: 'var(--secondary-color)' }}>{service.title || '新服務項目'}</span>
+                    <div className="admin-list-item-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <span className="admin-badge" style={{ backgroundColor: 'var(--secondary-color)' }}>{service.title || '新服務項目'}</span>
+                        {localData.services.featuredServiceId === service.id ? (
+                          <span className="admin-badge" style={{ backgroundColor: '#f59e0b', color: '#fff', fontSize: '0.75rem', fontWeight: '700', padding: '0.2rem 0.5rem', borderRadius: 'var(--radius-sm)' }}>
+                            ★ 目前精選實績 Case Study
+                          </span>
+                        ) : (
+                          <button
+                            onClick={() => {
+                              setLocalData(prev => ({
+                                ...prev,
+                                services: {
+                                  ...prev.services,
+                                  featuredServiceId: service.id
+                                }
+                              }));
+                              showToast(`已將「${service.title}」設為精選合作實績！`);
+                            }}
+                            className="btn btn-outline"
+                            style={{ padding: '0.15rem 0.5rem', fontSize: '0.7rem', borderColor: 'var(--secondary-color)', color: 'var(--secondary-color)' }}
+                          >
+                            設為精選實績
+                          </button>
+                        )}
+                      </div>
                       <button
                         onClick={() => handleDeleteService(index)}
                         className="btn btn-outline"
