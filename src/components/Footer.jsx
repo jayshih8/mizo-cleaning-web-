@@ -14,7 +14,7 @@ export default function Footer({ setActiveTab, companyInfo }) {
           <div className="footer-brand">
             <h2 className="logo" style={{ color: 'white', marginBottom: '1rem' }}>
               {companyInfo.logoImage ? (
-                <img src={companyInfo.logoImage} alt="Logo" style={{ height: '42px', width: 'auto', objectFit: 'contain', borderRadius: 'var(--radius-sm)' }} />
+                <img src={companyInfo.logoImage} alt="Logo" className="logo-img-custom" style={{ height: '42px', width: 'auto', objectFit: 'contain' }} />
               ) : (
                 <div className="logo-icon-wrap" style={{ boxShadow: 'none' }}>{companyInfo.logoIconText || 'TB'}</div>
               )}
