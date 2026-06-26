@@ -96,39 +96,49 @@ export default function Services({ servicesData }) {
           </div>
         )}
 
-        {/* Additional information on Fuhua Le Meridien hotel case */}
-        {displayFeatured.map((featuredService, idx) => (
-          <div key={featuredService.id} style={{ marginTop: idx === 0 ? '5rem' : '3.5rem', backgroundColor: 'white', borderRadius: 'var(--radius-lg)', padding: '3.5rem', boxShadow: 'var(--shadow-premium)' }}>
-            <div className="grid-2" style={{ alignItems: 'center', direction: idx % 2 === 1 ? 'rtl' : 'ltr' }}>
-              <div style={{ direction: 'ltr' }}>
-                <span style={{ fontSize: '0.85rem', fontWeight: '700', color: 'var(--secondary-color)', letterSpacing: '1px', textTransform: 'uppercase' }}>
-                  精選合作實績 Case Study
-                </span>
-                <h2 style={{ fontSize: '1.75rem', color: 'var(--primary-color)', marginTop: '0.5rem', marginBottom: '1.25rem' }}>
-                  {featuredService.title}專案
-                </h2>
-                <p style={{ color: 'var(--text-muted)', lineHeight: '1.75', marginBottom: '1.5rem' }}>
-                  {featuredService.description}
-                </p>
-                <ul className="service-features-list" style={{ marginBottom: '1.5rem' }}>
-                  {featuredService.features && featuredService.features.map((feat, index) => (
-                    <li key={index} style={{ fontSize: '0.95rem' }}>
-                      <CheckCircle2 size={16} /> <span>{feat}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div style={{ borderRadius: 'var(--radius-md)', overflow: 'hidden', boxShadow: 'var(--shadow-md)', height: '280px' }}>
-                <img
-                  src={getServiceImage(featuredService)}
-                  alt={featuredService.title}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
-              </div>
-            </div>
-          </div>
-        ))}
+
       </div>
     </div>
+
+    {/* NEW: Featured Case Studies Section with distinct background and section title */}
+    {displayFeatured && displayFeatured.length > 0 && (
+      <section className="section-padding bg-light" style={{ borderTop: '1px solid #e2e8f0', padding: '5rem 0' }}>
+        <div className="container">
+          <div className="section-title-container" style={{ marginBottom: '4.5rem' }}>
+            <h2 className="section-title" style={{ fontSize: '2rem' }}>精選合作實績 Case Studies</h2>
+            <p className="section-subtitle">為大型商辦、觀光飯店與工廠提供的高標準清潔維護成果指標</p>
+          </div>
+
+          {displayFeatured.map((featuredService, idx) => (
+            <div key={featuredService.id} style={{ marginTop: idx === 0 ? '0' : '4rem', backgroundColor: 'white', borderRadius: 'var(--radius-lg)', padding: '3.5rem', boxShadow: 'var(--shadow-premium)', border: '1px solid rgba(11,28,61,0.02)' }}>
+              <div className="grid-2" style={{ alignItems: 'center', direction: idx % 2 === 1 ? 'rtl' : 'ltr' }}>
+                <div style={{ direction: 'ltr' }}>
+                  <h2 style={{ fontSize: '1.75rem', color: 'var(--primary-color)', marginTop: '0', marginBottom: '1.25rem' }}>
+                    {featuredService.title}專案
+                  </h2>
+                  <p style={{ color: 'var(--text-muted)', lineHeight: '1.75', marginBottom: '1.5rem' }}>
+                    {featuredService.description}
+                  </p>
+                  <ul className="service-features-list" style={{ marginBottom: '1.5rem' }}>
+                    {featuredService.features && featuredService.features.map((feat, index) => (
+                      <li key={index} style={{ fontSize: '0.95rem' }}>
+                        <CheckCircle2 size={16} /> <span>{feat}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div style={{ borderRadius: 'var(--radius-md)', overflow: 'hidden', boxShadow: 'var(--shadow-md)', height: '280px' }}>
+                  <img
+                    src={getServiceImage(featuredService)}
+                    alt={featuredService.title}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
   );
 }
