@@ -114,7 +114,7 @@ export default function App() {
     }
   }, [config?.company?.favicon]);
 
-  // Dynamic Page Title & SEO Meta Description Update Effect
+  // Dynamic Page Title & SEO Meta Description Update Effect (including OpenGraph & JSON-LD Structured Data)
   useEffect(() => {
     const baseTitle = config?.company?.name || '美裝公寓大廈管理維護';
     const tabTitles = {
@@ -127,8 +127,9 @@ export default function App() {
       admin: `管理後台 | ${config?.company?.logoText || baseTitle}`
     };
     
+    const pageTitle = tabTitles[activeTab] || baseTitle;
     // Set page title
-    document.title = tabTitles[activeTab] || baseTitle;
+    document.title = pageTitle;
 
     // Set page meta description dynamically (except for admin portal)
     if (activeTab !== 'admin') {
@@ -147,7 +148,51 @@ export default function App() {
         credentials: `美裝公寓大廈管理維護是台北市清潔公會金質獎優良廠商，擁有齊全的甲種職業安全衛生主管、吊籠操作、勞安等各項專業證照及合規合法的公會會員資格。`,
         contact: `歡迎填寫線上諮詢預約單進行免費現場會勘與估價。我們將派專人與您聯繫，提供量身規劃的大樓與廠辦清潔管理方案。`
       };
-      metaDesc.content = tabDescriptions[activeTab] || tabDescriptions.home;
+      const descContent = tabDescriptions[activeTab] || tabDescriptions.home;
+      metaDesc.content = descContent;
+
+      // --- Dynamic OpenGraph (OG) Meta Tags ---
+      const updateOgTag = (property, content) => {
+        let meta = document.querySelector(`meta[property='${property}']`);
+        if (!meta) {
+          meta = document.createElement('meta');
+          meta.setAttribute('property', property);
+          document.getElementsByTagName('head')[0].appendChild(meta);
+        }
+        meta.content = content;
+      };
+
+      updateOgTag('og:title', pageTitle);
+      updateOgTag('og:description', descContent);
+      updateOgTag('og:type', 'website');
+      updateOgTag('og:url', window.location.href);
+      updateOgTag('og:image', config?.company?.logoImage || (window.location.origin + '/favicon.svg'));
+
+      // --- Dynamic JSON-LD Structured Data for Local Business SEO ---
+      let jsonLdScript = document.getElementById('jsonld-local-business');
+      if (!jsonLdScript) {
+        jsonLdScript = document.createElement('script');
+        jsonLdScript.id = 'jsonld-local-business';
+        jsonLdScript.type = 'application/ld+json';
+        document.getElementsByTagName('head')[0].appendChild(jsonLdScript);
+      }
+
+      const schemaData = {
+        '@context': 'https://schema.org',
+        '@type': 'LocalBusiness',
+        'name': config?.company?.name || '美裝公寓大廈管理維護股份有限公司',
+        'image': config?.company?.logoImage || (window.location.origin + '/favicon.svg'),
+        'telephone': config?.company?.phone || '',
+        'email': config?.company?.email || '',
+        'address': {
+          '@type': 'PostalAddress',
+          'streetAddress': config?.company?.address || '',
+          'addressLocality': 'Taipei',
+          'addressCountry': 'TW'
+        },
+        'url': window.location.origin
+      };
+      jsonLdScript.text = JSON.stringify(schemaData);
     }
 
     // Trigger Google Analytics Page View when tab changes
