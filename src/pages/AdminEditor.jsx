@@ -212,7 +212,7 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
         const parsed = JSON.parse(evt.target.result);
         
         // Simple schema validation to ensure it has key sections
-        if (!parsed.company || !parsed.home || !parsed.about || !parsed.services) {
+        if (!parsed.company || !parsed.home || !parsed.about || !parsed.services || !parsed.credentials || !parsed.process || !parsed.contact) {
           throw new Error('設定檔格式不正確，缺少必要的主頁面欄位！');
         }
 
