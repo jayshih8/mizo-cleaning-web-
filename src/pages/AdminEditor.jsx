@@ -5,6 +5,13 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
   const [localData, setLocalData] = useState(JSON.parse(JSON.stringify(configData)));
   const [activeSubTab, setActiveSubTab] = useState('company');
   const [toastMessage, setToastMessage] = useState('');
+  
+  // Password Authentication States
+  const [password, setPassword] = useState('');
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return sessionStorage.getItem('mizo_admin_auth') === 'true';
+  });
+  const [errorMsg, setErrorMsg] = useState('');
 
   // GitHub publish state
   const [githubToken, setGithubToken] = useState(() => localStorage.getItem('mizo_gh_token') || '');
@@ -291,6 +298,108 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
     }
   };
 
+  if (!isAuthenticated) {
+    return (
+      <div style={{
+        minHeight: 'calc(100vh - 80px)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%)',
+        padding: '2rem'
+      }}>
+        <div style={{
+          background: 'white',
+          padding: '3rem 2.5rem',
+          borderRadius: 'var(--radius-lg)',
+          boxShadow: 'var(--shadow-premium)',
+          width: '100%',
+          maxWidth: '400px',
+          textAlign: 'center',
+          border: '1px solid rgba(11, 28, 61, 0.05)'
+        }}>
+          <div style={{
+            width: '60px',
+            height: '60px',
+            borderRadius: '50%',
+            backgroundColor: 'rgba(11, 28, 61, 0.05)',
+            color: 'var(--primary-color)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto 1.5rem'
+          }}>
+            <Settings size={28} />
+          </div>
+          <h2 style={{ fontSize: '1.5rem', color: 'var(--primary-color)', marginBottom: '0.5rem', fontWeight: '700' }}>
+            網站後台管理鎖
+          </h2>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '2rem' }}>
+            請輸入管理密碼以存取內容編輯與發布設定
+          </p>
+
+          <form onSubmit={(e) => {
+            e.preventDefault();
+            if (password === 'admin1357') {
+              setIsAuthenticated(true);
+              sessionStorage.setItem('mizo_admin_auth', 'true');
+            } else {
+              setErrorMsg('密碼錯誤，請重新輸入！');
+            }
+          }}>
+            <div className="form-group" style={{ textAlign: 'left', marginBottom: '1.5rem' }}>
+              <label htmlFor="adminPassword" style={{ fontSize: '0.9rem', fontWeight: '600' }}>管理密碼</label>
+              <input
+                type="password"
+                id="adminPassword"
+                className="form-control"
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (errorMsg) setErrorMsg('');
+                }}
+                placeholder="輸入管理密碼..."
+                style={{ textAlign: 'center', letterSpacing: '0.2em' }}
+                required
+                autoFocus
+              />
+            </div>
+
+            {errorMsg && (
+              <div style={{
+                color: '#dc3545',
+                fontSize: '0.85rem',
+                fontWeight: '600',
+                marginBottom: '1.25rem',
+                backgroundColor: 'rgba(220, 53, 69, 0.05)',
+                padding: '0.5rem',
+                borderRadius: 'var(--radius-sm)',
+                border: '1px solid rgba(220, 53, 69, 0.1)'
+              }}>
+                {errorMsg}
+              </div>
+            )}
+
+            <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '0.85rem' }}>
+              確認密碼並進入
+            </button>
+          </form>
+
+          <button
+            onClick={() => {
+              setActiveTab('home');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            className="btn btn-outline"
+            style={{ width: '100%', marginTop: '1rem', padding: '0.85rem', borderColor: '#ccc', color: 'var(--text-muted)' }}
+          >
+            返回前台網站
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="admin-layout animate-fade-in">
       <div className="container">
@@ -316,6 +425,8 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
           <div className="admin-actions">
             <button
               onClick={() => {
+                sessionStorage.removeItem('mizo_admin_auth');
+                setIsAuthenticated(false);
                 setActiveTab('home');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
