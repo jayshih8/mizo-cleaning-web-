@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Save, Download, RotateCcw, AlertTriangle, FileText, Info, Plus, Trash, LogOut, Rocket, Settings, CheckCircle2, XCircle, Loader, Upload } from 'lucide-react';
+import { Save, Download, RotateCcw, AlertTriangle, FileText, Info, Plus, Trash, LogOut, Rocket, Settings, CheckCircle2, XCircle, Loader, Upload, Lock } from 'lucide-react';
 
 export default function AdminEditor({ configData, onSave, onReset, setActiveTab }) {
   const [localData, setLocalData] = useState(JSON.parse(JSON.stringify(configData)));
@@ -412,37 +412,50 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%)',
-        padding: '2rem'
+        background: 'linear-gradient(135deg, #0b1c3d 0%, #1e3a8a 100%)',
+        padding: '2rem',
+        position: 'relative',
+        overflow: 'hidden'
       }}>
+        {/* Background Decorative Blobs */}
+        <div style={{ position: 'absolute', width: '300px', height: '300px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(13, 148, 136, 0.15) 0%, rgba(0,0,0,0) 70%)', top: '-10%', left: '-10%' }}></div>
+        <div style={{ position: 'absolute', width: '400px', height: '400px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(6, 182, 212, 0.15) 0%, rgba(0,0,0,0) 70%)', bottom: '-10%', right: '-10%' }}></div>
+
         <div style={{
-          background: 'white',
-          padding: '3rem 2.5rem',
+          background: 'rgba(255, 255, 255, 0.96)',
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
+          padding: '3.5rem 2.5rem',
           borderRadius: 'var(--radius-lg)',
-          boxShadow: 'var(--shadow-premium)',
+          boxShadow: '0 25px 50px -12px rgba(11, 28, 61, 0.35)',
           width: '100%',
-          maxWidth: '400px',
+          maxWidth: '420px',
           textAlign: 'center',
-          border: '1px solid rgba(11, 28, 61, 0.05)'
+          border: '1px solid rgba(255, 255, 255, 0.8)',
+          zIndex: 10,
+          position: 'relative'
         }}>
+          {/* Logo Badge */}
           <div style={{
-            width: '60px',
-            height: '60px',
+            width: '64px',
+            height: '64px',
             borderRadius: '50%',
-            backgroundColor: 'rgba(11, 28, 61, 0.05)',
-            color: 'var(--primary-color)',
+            background: 'linear-gradient(135deg, rgba(13, 148, 136, 0.1) 0%, rgba(6, 182, 212, 0.15) 100%)',
+            color: 'var(--secondary-color)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            margin: '0 auto 1.5rem'
+            margin: '0 auto 1.5rem',
+            boxShadow: '0 4px 12px rgba(13, 148, 136, 0.1)'
           }}>
-            <Settings size={28} />
+            <Lock size={26} />
           </div>
-          <h2 style={{ fontSize: '1.5rem', color: 'var(--primary-color)', marginBottom: '0.5rem', fontWeight: '700' }}>
-            網站後台管理鎖
+          
+          <h2 style={{ fontSize: '1.65rem', color: 'var(--primary-color)', marginBottom: '0.5rem', fontWeight: '700', letterSpacing: '0.05em' }}>
+            網站管理後台
           </h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '2rem' }}>
-            請輸入管理密碼以存取內容編輯與發布設定
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginBottom: '2rem', lineHeight: '1.5' }}>
+            請輸入管理密碼以進行網站內容維護與發布
           </p>
 
           <form onSubmit={(e) => {
@@ -455,7 +468,7 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
             }
           }}>
             <div className="form-group" style={{ textAlign: 'left', marginBottom: '1.5rem' }}>
-              <label htmlFor="adminPassword" style={{ fontSize: '0.9rem', fontWeight: '600' }}>管理密碼</label>
+              <label htmlFor="adminPassword" style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--primary-color)', marginBottom: '0.5rem', display: 'block' }}>管理密碼</label>
               <input
                 type="password"
                 id="adminPassword"
@@ -465,8 +478,17 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
                   setPassword(e.target.value);
                   if (errorMsg) setErrorMsg('');
                 }}
-                placeholder="輸入管理密碼..."
-                style={{ textAlign: 'center', letterSpacing: '0.2em' }}
+                placeholder="請輸入後台管理密碼"
+                style={{ 
+                  textAlign: 'center', 
+                  letterSpacing: '0.15em',
+                  fontSize: '0.95rem',
+                  padding: '0.85rem 1rem',
+                  borderRadius: 'var(--radius-sm)',
+                  border: '1px solid #cbd5e1',
+                  background: '#f8fafc',
+                  transition: 'all 0.2s ease'
+                }}
                 required
                 autoFocus
               />
@@ -479,16 +501,34 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
                 fontWeight: '600',
                 marginBottom: '1.25rem',
                 backgroundColor: 'rgba(220, 53, 69, 0.05)',
-                padding: '0.5rem',
+                padding: '0.6rem',
                 borderRadius: 'var(--radius-sm)',
-                border: '1px solid rgba(220, 53, 69, 0.1)'
+                border: '1px solid rgba(220, 53, 69, 0.15)'
               }}>
                 {errorMsg}
               </div>
             )}
 
-            <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '0.85rem' }}>
-              確認密碼並進入
+            <button 
+              type="submit" 
+              className="btn" 
+              style={{ 
+                width: '100%', 
+                padding: '0.85rem', 
+                background: 'linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%)',
+                color: 'white',
+                border: 'none',
+                fontWeight: '600',
+                fontSize: '0.95rem',
+                borderRadius: 'var(--radius-sm)',
+                cursor: 'pointer',
+                boxShadow: '0 4px 12px rgba(11, 28, 61, 0.2)',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseEnter={(e) => e.target.style.transform = 'translateY(-1px)'}
+              onMouseLeave={(e) => e.target.style.transform = 'translateY(0)'}
+            >
+              登入管理後台
             </button>
           </form>
 
@@ -496,10 +536,24 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
             onClick={() => {
               setActiveTab('home');
             }}
-            className="btn btn-outline"
-            style={{ width: '100%', marginTop: '1rem', padding: '0.85rem', borderColor: '#ccc', color: 'var(--text-muted)' }}
+            className="btn"
+            style={{ 
+              width: '100%', 
+              marginTop: '1rem', 
+              padding: '0.85rem', 
+              border: '1px solid #cbd5e1', 
+              color: 'var(--text-muted)',
+              background: 'transparent',
+              fontWeight: '500',
+              fontSize: '0.95rem',
+              borderRadius: 'var(--radius-sm)',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease'
+            }}
+            onMouseEnter={(e) => e.target.style.backgroundColor = '#f1f5f9'}
+            onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
           >
-            返回前台網站
+            返回前台首頁
           </button>
         </div>
       </div>
