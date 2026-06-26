@@ -23,7 +23,7 @@ export default function Header({ activeTab, setActiveTab, companyInfo }) {
     <header className="header-wrapper">
       <div className="container">
         <nav className="navbar">
-          <a href="#home" className="logo" onClick={(e) => { e.preventDefault(); handleNavClick('home'); }}>
+          <a href="/" className="logo" onClick={(e) => { e.preventDefault(); handleNavClick('home'); }}>
             {companyInfo.logoImage ? (
               <img src={companyInfo.logoImage} alt="Logo" style={{ height: '42px', width: 'auto', objectFit: 'contain', borderRadius: 'var(--radius-sm)' }} />
             ) : (
@@ -37,7 +37,7 @@ export default function Header({ activeTab, setActiveTab, companyInfo }) {
             {menuItems.map((item) => (
               <li key={item.id}>
                 <a
-                  href={`#${item.id}`}
+                  href={item.id === 'home' ? '/' : `/${item.id}`}
                   className={`nav-link ${activeTab === item.id ? 'active' : ''}`}
                   onClick={(e) => {
                     e.preventDefault();
@@ -67,7 +67,7 @@ export default function Header({ activeTab, setActiveTab, companyInfo }) {
         {menuItems.map((item) => (
           <li key={item.id}>
             <a
-              href={`#${item.id}`}
+              href={item.id === 'home' ? '/' : `/${item.id}`}
               className={`nav-link ${activeTab === item.id ? 'active' : ''}`}
               onClick={(e) => {
                 e.preventDefault();

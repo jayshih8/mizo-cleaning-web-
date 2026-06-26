@@ -29,19 +29,19 @@ export default function Footer({ setActiveTab, companyInfo }) {
             <h3 className="footer-title">快速連結</h3>
             <ul className="footer-links" style={{ listStyle: 'none' }}>
               <li className="footer-link-item">
-                <a href="#home" onClick={(e) => { e.preventDefault(); handleLinkClick('home'); }}>首頁首覽</a>
+                <a href="/" onClick={(e) => { e.preventDefault(); handleLinkClick('home'); }}>首頁首覽</a>
               </li>
               <li className="footer-link-item">
-                <a href="#about" onClick={(e) => { e.preventDefault(); handleLinkClick('about'); }}>關於我們</a>
+                <a href="/about" onClick={(e) => { e.preventDefault(); handleLinkClick('about'); }}>關於我們</a>
               </li>
               <li className="footer-link-item">
-                <a href="#services" onClick={(e) => { e.preventDefault(); handleLinkClick('services'); }}>服務項目</a>
+                <a href="/services" onClick={(e) => { e.preventDefault(); handleLinkClick('services'); }}>服務項目</a>
               </li>
               <li className="footer-link-item">
-                <a href="#credentials" onClick={(e) => { e.preventDefault(); handleLinkClick('credentials'); }}>專業證照</a>
+                <a href="/credentials" onClick={(e) => { e.preventDefault(); handleLinkClick('credentials'); }}>專業證照</a>
               </li>
               <li className="footer-link-item">
-                <a href="#contact" onClick={(e) => { e.preventDefault(); handleLinkClick('contact'); }}>聯絡我們</a>
+                <a href="/contact" onClick={(e) => { e.preventDefault(); handleLinkClick('contact'); }}>聯絡我們</a>
               </li>
             </ul>
           </div>

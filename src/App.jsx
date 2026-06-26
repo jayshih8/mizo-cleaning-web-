@@ -17,43 +17,46 @@ export default function App() {
   // Navigation active tab state: 'home' | 'about' | 'services' | 'credentials' | 'contact' | 'admin'
   const [activeTab, setActiveTab] = useState('home');
 
-  // Monitor hash change for secret admin login and general routing
+  // Helper to map pathname to activeTab ID
+  const getTabFromPath = (pathname) => {
+    // Remove leading and trailing slashes and split by query string
+    const cleanPath = pathname.split('?')[0].replace(/^\/|\/$/g, '');
+    if (cleanPath === 'admin-portal' || cleanPath === 'admin') {
+      return 'admin';
+    }
+    if (!cleanPath || cleanPath === 'home') {
+      return 'home';
+    }
+    const validTabs = ['about', 'services', 'process', 'credentials', 'contact'];
+    if (validTabs.includes(cleanPath)) {
+      return cleanPath;
+    }
+    return 'home';
+  };
+
+  // Monitor pathname changes (popstate event for browser back/forward buttons)
   useEffect(() => {
-    const handleHashChange = () => {
-      const hash = window.location.hash;
-      if (hash === '#/admin-portal' || hash === '#/admin' || hash === '#admin') {
-        setActiveTab('admin');
-      } else if (hash === '#/home' || hash === '#home') {
-        setActiveTab('home');
-      } else if (hash === '#/about' || hash === '#about') {
-        setActiveTab('about');
-      } else if (hash === '#/services' || hash === '#services') {
-        setActiveTab('services');
-      } else if (hash === '#/process' || hash === '#process') {
-        setActiveTab('process');
-      } else if (hash === '#/credentials' || hash === '#credentials') {
-        setActiveTab('credentials');
-      } else if (hash === '#/contact' || hash === '#contact') {
-        setActiveTab('contact');
-      }
+    const handleLocationChange = () => {
+      const tab = getTabFromPath(window.location.pathname);
+      setActiveTab(tab);
     };
 
-    handleHashChange();
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
+    handleLocationChange();
+    window.addEventListener('popstate', handleLocationChange);
+    return () => window.removeEventListener('popstate', handleLocationChange);
   }, []);
 
-  // Sync hash to activeTab whenever tab changes
+  // Sync pathname to activeTab whenever tab changes
   useEffect(() => {
-    if (activeTab === 'admin') {
-      if (window.location.hash !== '#/admin-portal') {
-        window.location.hash = '#/admin-portal';
+    const currentTab = getTabFromPath(window.location.pathname);
+    if (activeTab !== currentTab) {
+      let newPath = '/';
+      if (activeTab === 'admin') {
+        newPath = '/admin-portal';
+      } else if (activeTab !== 'home') {
+        newPath = `/${activeTab}`;
       }
-    } else {
-      const newHash = `#/${activeTab}`;
-      if (window.location.hash !== newHash) {
-        window.location.hash = newHash;
-      }
+      window.history.pushState({}, '', newPath);
     }
   }, [activeTab]);
 
