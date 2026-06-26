@@ -73,6 +73,20 @@ export default function Home({ homeData, companyInfo, servicesData, setActiveTab
         </div>
       </section>
 
+      {/* Stats Counter Section (Moved to 2nd block) */}
+      <section className="stats-section">
+        <div className="container">
+          <div className="grid-4">
+            {homeData.stats && homeData.stats.map((stat, index) => (
+              <div key={index} className="stat-item">
+                <h2><AnimatedCounter value={stat.number} /></h2>
+                <p>{stat.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Corporate Advantages Section */}
       <section className="section-padding">
         <div className="container">
@@ -258,19 +272,6 @@ export default function Home({ homeData, companyInfo, servicesData, setActiveTab
         </section>
       )}
 
-      {/* Stats Counter Section */}
-      <section className="stats-section">
-        <div className="container">
-          <div className="grid-4">
-            {homeData.stats && homeData.stats.map((stat, index) => (
-              <div key={index} className="stat-item">
-                <h2><AnimatedCounter value={stat.number} /></h2>
-                <p>{stat.label}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Dynamic CTA Banner */}
       <section className="section-padding" style={{ backgroundColor: 'var(--bg-white)', borderBottom: '1px solid #f1f5f9' }}>
