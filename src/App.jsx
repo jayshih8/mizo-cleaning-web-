@@ -80,6 +80,25 @@ export default function App() {
     }
   });
 
+  // Dynamic Favicon Update Effect
+  useEffect(() => {
+    const faviconUrl = config?.company?.favicon;
+    let link = document.querySelector("link[rel~='icon']");
+    if (!link) {
+      link = document.createElement('link');
+      link.rel = 'icon';
+      document.getElementsByTagName('head')[0].appendChild(link);
+    }
+    if (faviconUrl) {
+      link.href = faviconUrl;
+      link.type = faviconUrl.startsWith('data:image/svg+xml') ? 'image/svg+xml' : 'image/png';
+    } else {
+      // Default fallback SVG SOAP emoji
+      link.href = "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧼</text></svg>";
+      link.type = 'image/svg+xml';
+    }
+  }, [config?.company?.favicon]);
+
   const handleSaveConfig = (newConfig) => {
     setConfig(newConfig);
     try {

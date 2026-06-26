@@ -567,6 +567,23 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
                       )}
                     </div>
                   </div>
+                  <div className="form-group admin-grid-full" style={{ marginBottom: '1.5rem' }}>
+                    <label>分頁標籤圖示 Favicon (選填，上傳後將更新瀏覽器分頁圖示，建議為正方形 PNG/ICO，自動轉 Base64)</label>
+                    <div className="image-upload-zone" onClick={() => document.getElementById('faviconUpload').click()}>
+                      <Info size={24} style={{ color: 'var(--text-muted)' }} />
+                      <span>點擊上傳圖片以設置瀏覽器分頁標籤圖示</span>
+                      <input
+                        type="file"
+                        id="faviconUpload"
+                        style={{ display: 'none' }}
+                        accept="image/*"
+                        onChange={(e) => handleImageUpload(['company', 'favicon'], e.target.files[0])}
+                      />
+                      {localData.company.favicon && (
+                        <img src={localData.company.favicon} alt="Favicon Preview" className="image-preview-thumbnail" style={{ objectFit: 'contain' }} />
+                      )}
+                    </div>
+                  </div>
                   <div className="form-group">
                     <label>電話 (系統撥打用，僅限數字)</label>
                     <input
