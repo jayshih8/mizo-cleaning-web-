@@ -16,6 +16,8 @@ export default function Contact({ companyInfo, contactData }) {
   });
 
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -25,22 +27,67 @@ export default function Contact({ companyInfo, contactData }) {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // In a real application, this would send an API request.
-    // For now, we simulate success.
-    setIsSubmitted(true);
-    setFormData({
-      name: '',
-      phone: '',
-      email: '',
-      address: '',
-      serviceType: 'building-factory',
-      message: ''
-    });
-    setTimeout(() => {
-      setIsSubmitted(false);
-    }, 5000);
+    setIsSubmitting(true);
+    setSubmitError('');
+
+    // Dynamically retrieve the company's email from the config
+    const targetEmail = companyInfo.email || 'tb123@ms29.hinet.net';
+    
+    // Map serviceType option keys to readable names
+    const serviceNameMap = {
+      'building-factory': '大樓與大型工廠清潔維護',
+      'hotel-cleaning': '國際觀光飯店日常保養',
+      'office-cleaning': '企業商辦大樓派駐清潔',
+      'hospital-cleaning': '醫療院所高規格消毒清潔',
+      'other': '其他清潔管理諮詢'
+    };
+
+    const payload = {
+      '姓名/單位': formData.name,
+      '聯絡電話': formData.phone,
+      '電子信箱': formData.email,
+      '會勘/清潔地址': formData.address,
+      '需求項目': serviceNameMap[formData.serviceType] || formData.serviceType,
+      '需求詳述/備註': formData.message,
+      '_subject': `🔔 美裝官網 - 新增線上預約諮詢 (來自: ${formData.name})`,
+      '_template': 'table'
+    };
+
+    try {
+      const response = await fetch(`https://formsubmit.co/ajax/${targetEmail}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (response.ok) {
+        setIsSubmitted(true);
+        setFormData({
+          name: '',
+          phone: '',
+          email: '',
+          address: '',
+          serviceType: 'building-factory',
+          message: ''
+        });
+        setTimeout(() => {
+          setIsSubmitted(false);
+        }, 8000);
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.message || '發送失敗');
+      }
+    } catch (err) {
+      console.error('Form submission error:', err);
+      setSubmitError('諮詢單發送失敗，請直接撥打電話或透過 LINE 與我們聯繫。');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -136,6 +183,22 @@ export default function Contact({ companyInfo, contactData }) {
               </div>
             )}
 
+            {submitError && (
+              <div 
+                style={{ 
+                  backgroundColor: '#fdf2f2', 
+                  border: '1px solid #ef4444', 
+                  color: '#991b1b',
+                  padding: '1rem',
+                  borderRadius: 'var(--radius-sm)',
+                  marginBottom: '1.5rem',
+                  fontSize: '0.95rem'
+                }}
+              >
+                <span>{submitError}</span>
+              </div>
+            )}
+
             <form onSubmit={handleSubmit}>
               <div className="form-group">
                 <label htmlFor="name">貴賓姓名 / 單位名稱</label>
@@ -224,9 +287,9 @@ export default function Contact({ companyInfo, contactData }) {
                 />
               </div>
 
-              <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>
+              <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={isSubmitting}>
                 <Send size={16} />
-                <span>送出線上諮詢單</span>
+                <span>{isSubmitting ? '正在發送諮詢單...' : '送出線上諮詢單'}</span>
               </button>
             </form>
           </div>
