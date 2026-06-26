@@ -73,19 +73,7 @@ export default function Home({ homeData, companyInfo, servicesData, setActiveTab
         </div>
       </section>
 
-      {/* Stats Counter Section (Moved to 2nd block) */}
-      <section className="stats-section">
-        <div className="container">
-          <div className="grid-4">
-            {homeData.stats && homeData.stats.map((stat, index) => (
-              <div key={index} className="stat-item">
-                <h2><AnimatedCounter value={stat.number} /></h2>
-                <p>{stat.label}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+
 
       {/* Corporate Advantages Section */}
       <section className="section-padding">
@@ -139,6 +127,20 @@ export default function Home({ homeData, companyInfo, servicesData, setActiveTab
                 <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', margin: 0 }}>頂級奢華酒店公共區域與客房長期日常維護實績</p>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Counter Section (Moved to 3rd block) */}
+      <section className="stats-section">
+        <div className="container">
+          <div className="grid-4">
+            {homeData.stats && homeData.stats.map((stat, index) => (
+              <div key={index} className="stat-item">
+                <h2><AnimatedCounter value={stat.number} /></h2>
+                <p>{stat.label}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
