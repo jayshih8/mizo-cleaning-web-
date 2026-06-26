@@ -1,16 +1,76 @@
-# React + Vite
+# 美裝公寓大廈管理維護 - 官方網站專案交接說明文件
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+本專案為 **美裝公寓大廈管理維護股份有限公司** 的官方網站。採用現代化的前端技術棧建置，並搭載了輕量、直覺的視覺化後台（CMS），方便管理人員在無程式背景下自主修改全站圖文內容。
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 📂 專案檔案結構簡介
+* `src/`：網頁所有頁面、元件與樣式表的核心程式碼目錄。
+  - `src/pages/`：各分頁組件（首頁、關於我們、服務項目、專業證照、施工過程、聯絡我們、管理後台）。
+  - `src/components/`：全站共用元件（頁首、頁尾、懸浮聯絡按鈕）。
+  - `src/data/contentConfig.json`：**網站的核心圖文資料庫**，全站所有文字與證照照片路徑皆記錄於此。
+* `public/`：存放網站的靜態資源（例如：標章圖片、Favicon、robots.txt 以及設計師署名檔 `humans.txt`）。
+* `package.json`：記錄專案所需的 NPM 套件及啟動/編譯指令。
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🚀 開發人員快速開始 (Developer Guide)
+接手的開發人員或工程師，請依循以下步驟在本機啟動專案：
 
-## Expanding the Oxlint configuration
+### 1. 安裝依賴套件
+進入專案根目錄，執行以下指令安裝所需套件：
+```bash
+npm install
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+### 2. 本地開發模式啟動
+啟動本地開發伺服器，並開啟瀏覽器熱重載進行實時預覽：
+```bash
+npm run dev
+```
+啟動後可在瀏覽器開啟 `http://localhost:5173`（依終端機實際顯示的 Port 為準）進行檢視。
+
+### 3. 生產環境打包編譯
+將專案編譯並打包為高度壓縮、優化的靜態網頁檔案：
+```bash
+npm run build
+```
+編譯完成後，會生成一個 **`dist`** 資料夾，內部即為可直接上傳部署至任何網頁空間（如 Vercel, Netlify, GitHub Pages, Apache 或 IIS 主機）的靜態 HTML/JS/CSS 資源。
+
+---
+
+## ✍️ 網站內容管理後台操作指南 (Admin Portal Guide)
+
+為了方便客戶端自主變更網站資訊，本網站內建免資料庫的視覺化後台管理系統。
+
+### 1. 登入後台
+* 後台網址為：`你的網址/#/admin-portal` (或 `你的網址/admin-portal`)
+* 輸入後台發布授權碼即可進入編輯面板。
+
+### 2. 支援修改的內容
+* **基本資訊**：公司名稱、電話、傳真、信箱、工作時間、辦公地址。
+* **首頁與各分頁圖文**：首頁主視覺 Banner、服務總覽簡介、施工實績案例（可新增、刪除、排序並上傳照片）、客戶口碑見證（星等及評價內容）、專業證照圖片等。
+* **行銷與 SEO 配置**：可以更換網站小圖示（Favicon）、自訂 Google Analytics 追蹤碼 (GA4 ID)、以及 Google Search Console 網站管理員驗證碼。
+
+### 3. 如何保存並套用修改
+後台修改有兩種發布模式：
+1. **直接保存與發布**：在後台點擊右上角的 **「確認發布修改 (Publish)」**。資料會即時儲存至瀏覽器的快取中，若網站有對接雲端自動化發布，將會直接套用至線上網頁。
+2. **手動更新與交接**：
+   - 點擊右上角的 **「匯出設定檔 (Export JSON)」**，會下載一個全新的 `contentConfig.json` 檔案。
+   - 將該檔案覆蓋專案中的 `src/data/contentConfig.json`。
+   - 再次執行 `npm run build` 並部署，即可永久將新資料寫入網站程式中。
+
+---
+
+### ⚠️ 打包交接特別注意事項
+當您需要把這一整包程式碼檔案打包成 `.zip` 壓縮檔寄送交接給客戶或他人時：
+* **重要**：請務必先刪除專案根目錄下的 **`node_modules`** 和 **`dist`** 資料夾後再進行壓縮。
+* **原因**：`node_modules` 內含數萬個依賴套件的小碎檔，會使打包極為緩慢且容量可能高達數百 MB，造成傳輸不便。接手者拿到乾淨的 ZIP 解壓縮後，只需在本機執行一次 `npm install` 即可自動還原所有套件。
+
+---
+
+### 🎨 關於網頁設計署名
+本專案已採用符合軟體界標準的做法，在程式碼底層植入了設計師 `YUNG CHANG` 的版權聲明：
+* **首頁 Console 彩蛋**：在瀏覽器中開啟 F12 「開發者工具」，可在 Console 控制台中看見設計精美的彩色署名。
+* **網站人類宣告檔**：可透過網址 `你的網址/humans.txt` 瀏覽純文字的開發與設計團隊誌謝。
+* **頁尾視覺署名**：目前在前台頁尾（Footer）右下角放置了質感灰色的 `網頁設計：YUNG CHANG` 連結。若客戶對前台視覺署名較敏感，可直接開啟 `src/components/Footer.jsx` 將 `className="footer-designer"` 區塊註解或移除，此動作完全不會影響後續網頁維護與 AI 開發功能。
