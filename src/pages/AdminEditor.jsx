@@ -320,13 +320,11 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
         {/* Info Instruction */}
         <div style={{ backgroundColor: 'rgba(217, 119, 6, 0.05)', borderLeft: '4px solid var(--accent-color)', padding: '1rem 1.5rem', borderRadius: 'var(--radius-sm)', marginBottom: '2rem', display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
           <AlertTriangle size={20} style={{ color: 'var(--accent-color)', flexShrink: 0, marginTop: '0.15rem' }} />
-          <div style={{ fontSize: '0.9rem', color: '#78350f' }}>
-            <strong>💡 如何讓變更永久生效？</strong><br />
-            點擊「即時套用」僅會將修改暫存在您的瀏覽器中（方便直接預覽成果）。要永久保存：
-            <ol style={{ paddingLeft: '1.25rem', marginTop: '0.25rem' }}>
-              <li>點擊右上角<strong>「下載設定檔」</strong>，會得到 <code>contentConfig.json</code>。</li>
-              <li>將此檔案複製覆蓋專案目錄下 <strong><code>src/data/contentConfig.json</code></strong> 即可永久生效。</li>
-            </ol>
+          <div style={{ fontSize: '0.9rem', color: '#78350f', lineHeight: '1.7' }}>
+            <strong>💡 如何讓變更永久生效與發布？</strong><br />
+            1. 點擊右上角<strong>「即時套用」</strong>：僅會將修改暫存在您的瀏覽器中，方便您點擊「返回前台」預覽成果。<br />
+            2. 確定修改無誤後：請切換至左側最下方的<strong>「🚀 發布至官網」</strong>，輸入發布 Token（僅需設定一次），點擊<strong>「立即發布至官網」</strong>，即可自動更新正式網頁（約需 2~3 分鐘）。<br />
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>（您也可以點擊右上角「下載設定檔」保存備份 <code>contentConfig.json</code>。）</span>
           </div>
         </div>
 
