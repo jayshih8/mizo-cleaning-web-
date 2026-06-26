@@ -694,6 +694,43 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
                       onChange={(e) => handleCompanyChange('workHours', e.target.value)}
                     />
                   </div>
+                  
+                  {/* Google SEO & Analytics Settings */}
+                  <div className="form-group admin-grid-full" style={{ marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid #e2e8f0' }}>
+                    <h3 style={{ fontSize: '1.1rem', color: 'var(--primary-color)', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <Settings size={18} />
+                      🔍 Google 搜尋與流量追蹤設定 (SEO)
+                    </h3>
+                    <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', margin: 0 }}>
+                      設定 Google Search Console 驗證碼與 Google Analytics 4 (GA4) 流量統計，讓您的網站更容易被搜尋並觀察客流量。
+                    </p>
+                  </div>
+                  <div className="form-group">
+                    <label>Google Analytics (GA4) 追蹤 ID (測量 ID)</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={localData.company.gaId || ''}
+                      onChange={(e) => handleCompanyChange('gaId', e.target.value)}
+                      placeholder="例如：G-K3EXXXXXXX"
+                    />
+                    <small style={{ color: 'var(--text-muted)' }}>
+                      貼入您的 GA4 「G-」開頭測量 ID 即可自動啟用全站流量追蹤與分頁瀏覽統計。
+                    </small>
+                  </div>
+                  <div className="form-group">
+                    <label>Google Search Console 驗證代碼</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={localData.company.googleVerification || ''}
+                      onChange={(e) => handleCompanyChange('googleVerification', e.target.value)}
+                      placeholder="貼入 google-site-verification 中 content 屬性的代碼"
+                    />
+                    <small style={{ color: 'var(--text-muted)' }}>
+                      貼入驗證 meta 標記的內容（例如：<code>wJk..._d3E</code>），系統會自動插入對應 HTML 標記以利 Google 站長工具驗證。
+                    </small>
+                  </div>
                 </div>
               </div>
             )}

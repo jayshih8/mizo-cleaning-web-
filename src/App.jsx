@@ -102,6 +102,99 @@ export default function App() {
     }
   }, [config?.company?.favicon]);
 
+  // Dynamic Page Title & SEO Meta Description Update Effect
+  useEffect(() => {
+    const baseTitle = config?.company?.name || '美裝公寓大廈管理維護';
+    const tabTitles = {
+      home: `首頁 | ${baseTitle}`,
+      about: `關於我們 | ${baseTitle}`,
+      services: `服務項目 | ${baseTitle}`,
+      process: `施工過程 | ${baseTitle}`,
+      credentials: `專業證照 | ${baseTitle}`,
+      contact: `聯絡我們 | ${baseTitle}`,
+      admin: `管理後台 | ${config?.company?.logoText || baseTitle}`
+    };
+    
+    // Set page title
+    document.title = tabTitles[activeTab] || baseTitle;
+
+    // Set page meta description dynamically (except for admin portal)
+    if (activeTab !== 'admin') {
+      let metaDesc = document.querySelector("meta[name='description']");
+      if (!metaDesc) {
+        metaDesc = document.createElement('meta');
+        metaDesc.name = 'description';
+        document.getElementsByTagName('head')[0].appendChild(metaDesc);
+      }
+      
+      const tabDescriptions = {
+        home: `美裝公寓大廈管理維護股份有限公司創立於 1979 年中日合資技術合作，引進日本東京美裝興業高標準 SOP，為大型工廠、商辦大樓、國際飯店與大型醫院提供極致品質與職業安全雙重合規的清潔維護服務。`,
+        about: `了解美裝公寓大廈管理維護股份有限公司的經營理念與發展沿革。我們引進日式精密工法與嚴格的員工安全教育培訓，提供頂級的清潔管理服務。`,
+        services: `探索我們提供的全方位清潔維護服務：大樓與大型工廠清潔、國際觀光飯店日常保養、企業商辦派駐清潔、醫療院所高規格消毒清潔。`,
+        process: `查看美裝的日式標準施工清潔作業流程。包含施工前會勘、安全防護準備、日式工法施作、領班雙重檢驗到完工驗收的完整 SOP。`,
+        credentials: `美裝公寓大廈管理維護是台北市清潔公會金質獎優良廠商，擁有齊全的甲種職業安全衛生主管、吊籠操作、勞安等各項專業證照及合規合法的公會會員資格。`,
+        contact: `歡迎填寫線上諮詢預約單進行免費現場會勘與估價。我們將派專人與您聯繫，提供量身規劃的大樓與廠辦清潔管理方案。`
+      };
+      metaDesc.content = tabDescriptions[activeTab] || tabDescriptions.home;
+    }
+
+    // Trigger Google Analytics Page View when tab changes
+    const gaId = config?.company?.gaId;
+    if (window.gtag && gaId) {
+      window.gtag('config', gaId, {
+        page_path: window.location.pathname,
+        page_title: document.title
+      });
+    }
+  }, [activeTab, config]);
+
+  // Dynamic Google Tracking Integration (GA4 & Google Search Console Verification)
+  useEffect(() => {
+    const gaId = config?.company?.gaId;
+    const googleVerification = config?.company?.googleVerification;
+
+    // Handle Google Search Console Verification Meta Tag
+    let verificationMeta = document.querySelector("meta[name='google-site-verification']");
+    if (googleVerification) {
+      if (!verificationMeta) {
+        verificationMeta = document.createElement('meta');
+        verificationMeta.name = 'google-site-verification';
+        document.getElementsByTagName('head')[0].appendChild(verificationMeta);
+      }
+      verificationMeta.content = googleVerification;
+    } else if (verificationMeta) {
+      verificationMeta.remove();
+    }
+
+    // Handle Google Analytics 4 (GA4) Script Tags
+    const gaScriptId1 = 'google-analytics-gtag-loader';
+    const gaScriptId2 = 'google-analytics-gtag-init';
+
+    // Remove old tags if they exist
+    document.getElementById(gaScriptId1)?.remove();
+    document.getElementById(gaScriptId2)?.remove();
+
+    if (gaId) {
+      // Tag 1: External script loader
+      const script1 = document.createElement('script');
+      script1.id = gaScriptId1;
+      script1.async = true;
+      script1.src = `https://www.googletagmanager.com/gtag/js?id=${gaId}`;
+      document.head.appendChild(script1);
+
+      // Tag 2: Initialization script
+      const script2 = document.createElement('script');
+      script2.id = gaScriptId2;
+      script2.innerHTML = `
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '${gaId}', { page_path: window.location.pathname });
+      `;
+      document.head.appendChild(script2);
+    }
+  }, [config?.company?.gaId, config?.company?.googleVerification]);
+
   const handleSaveConfig = (newConfig) => {
     setConfig(newConfig);
     try {
