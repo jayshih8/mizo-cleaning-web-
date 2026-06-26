@@ -640,14 +640,13 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
             </button>
 
             {/* Publish Button - visually separated */}
-            <div style={{ marginTop: 'auto', paddingTop: '1.5rem', borderTop: '1px solid var(--border-color)' }}>
+            <div className="admin-publish-wrapper">
               <button
                 onClick={() => setActiveSubTab('publish')}
-                className={`admin-nav-btn ${activeSubTab === 'publish' ? 'active' : ''}`}
-                style={{ background: activeSubTab === 'publish' ? '' : 'linear-gradient(135deg, #0f5132 0%, #146c43 100%)', color: '#fff', borderRadius: 'var(--radius-sm)' }}
+                className={`admin-nav-btn admin-btn-publish ${activeSubTab === 'publish' ? 'active' : ''}`}
               >
                 <Rocket size={16} />
-                <span>🚀 發布至官網</span>
+                <span>發布至官網</span>
               </button>
             </div>
           </aside>
