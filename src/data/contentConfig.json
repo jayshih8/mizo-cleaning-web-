@@ -188,7 +188,8 @@
     ],
     "featuredServiceId": "hotel-cleaning",
     "featuredServiceIds": [
-      "hotel-cleaning"
+      "hotel-cleaning",
+      "building-factory"
     ]
   },
   "credentials": {
