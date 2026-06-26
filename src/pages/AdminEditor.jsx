@@ -1,10 +1,92 @@
 import React, { useState } from 'react';
-import { Save, Download, RotateCcw, AlertTriangle, FileText, Info, Plus, Trash, LogOut } from 'lucide-react';
+import { Save, Download, RotateCcw, AlertTriangle, FileText, Info, Plus, Trash, LogOut, Rocket, Settings, CheckCircle2, XCircle, Loader } from 'lucide-react';
 
 export default function AdminEditor({ configData, onSave, onReset, setActiveTab }) {
   const [localData, setLocalData] = useState(JSON.parse(JSON.stringify(configData)));
   const [activeSubTab, setActiveSubTab] = useState('company');
   const [toastMessage, setToastMessage] = useState('');
+
+  // GitHub publish state
+  const [githubToken, setGithubToken] = useState(() => localStorage.getItem('mizo_gh_token') || '');
+  const [publishStatus, setPublishStatus] = useState('idle'); // idle | loading | success | error
+  const [publishMessage, setPublishMessage] = useState('');
+
+  // GitHub API publish function
+  const handlePublish = async () => {
+    if (!githubToken.trim()) {
+      setPublishStatus('error');
+      setPublishMessage('請先輸入 GitHub Personal Access Token！');
+      return;
+    }
+
+    const OWNER = 'jayshih8';
+    const REPO = 'mizo-cleaning-web-';
+    const FILE_PATH = 'src/data/contentConfig.json';
+    const API_URL = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`;
+
+    setPublishStatus('loading');
+    setPublishMessage('正在連線至 GitHub…');
+
+    try {
+      // Step 1: Get current file SHA (required for update)
+      const getRes = await fetch(API_URL, {
+        headers: {
+          Authorization: `Bearer ${githubToken}`,
+          Accept: 'application/vnd.github+json',
+        },
+      });
+
+      if (!getRes.ok) {
+        const errData = await getRes.json();
+        throw new Error(errData.message || `取得檔案失敗 (${getRes.status})`);
+      }
+
+      const fileData = await getRes.json();
+      const sha = fileData.sha;
+
+      setPublishMessage('正在上傳新內容…');
+
+      // Step 2: Encode new content as Base64
+      const newContent = JSON.stringify(localData, null, 2);
+      const encoded = btoa(unescape(encodeURIComponent(newContent)));
+
+      // Step 3: Commit updated file
+      const putRes = await fetch(API_URL, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${githubToken}`,
+          Accept: 'application/vnd.github+json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: '📝 [Admin] 更新網站內容設定',
+          content: encoded,
+          sha: sha,
+          branch: 'main',
+        }),
+      });
+
+      if (!putRes.ok) {
+        const errData = await putRes.json();
+        throw new Error(errData.message || `發布失敗 (${putRes.status})`);
+      }
+
+      setPublishStatus('success');
+      setPublishMessage('✅ 已成功推送至 GitHub！網站將在約 2-3 分鐘後自動更新。');
+
+      // Also save locally
+      onSave(localData);
+
+    } catch (err) {
+      setPublishStatus('error');
+      setPublishMessage(`❌ 發布失敗：${err.message}`);
+    }
+  };
+
+  const handleSaveToken = () => {
+    localStorage.setItem('mizo_gh_token', githubToken);
+    showToast('GitHub Token 已儲存至本機！');
+  };
 
   const showToast = (msg) => {
     setToastMessage(msg);
@@ -39,15 +121,15 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
     const reader = new FileReader();
     reader.onload = (e) => {
       const base64Data = e.target.result;
-      
-      // Navigate to correct field based on fieldPath array
-      const newData = { ...localData };
+
+      // Deep-clone to avoid shared reference mutations with nested arrays
+      const newData = JSON.parse(JSON.stringify(localData));
       let current = newData;
       for (let i = 0; i < fieldPath.length - 1; i++) {
         current = current[fieldPath[i]];
       }
       current[fieldPath[fieldPath.length - 1]] = base64Data;
-      
+
       setLocalData(newData);
       showToast('圖片上傳並轉換 Base64 成功！');
     };
@@ -282,17 +364,159 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
               <span>服務項目管理</span>
             </button>
             <button
+              onClick={() => setActiveSubTab('process')}
+              className={`admin-nav-btn ${activeSubTab === 'process' ? 'active' : ''}`}
+            >
+              <FileText size={16} />
+              <span>施工過程管理</span>
+            </button>
+            <button
               onClick={() => setActiveSubTab('credentials')}
               className={`admin-nav-btn ${activeSubTab === 'credentials' ? 'active' : ''}`}
             >
               <FileText size={16} />
               <span>證照與榮譽</span>
             </button>
+            <button
+              onClick={() => setActiveSubTab('contact')}
+              className={`admin-nav-btn ${activeSubTab === 'contact' ? 'active' : ''}`}
+            >
+              <FileText size={16} />
+              <span>聯絡我們頁面</span>
+            </button>
+
+            {/* Publish Button - visually separated */}
+            <div style={{ marginTop: 'auto', paddingTop: '1.5rem', borderTop: '1px solid var(--border-color)' }}>
+              <button
+                onClick={() => setActiveSubTab('publish')}
+                className={`admin-nav-btn ${activeSubTab === 'publish' ? 'active' : ''}`}
+                style={{ background: activeSubTab === 'publish' ? '' : 'linear-gradient(135deg, #0f5132 0%, #146c43 100%)', color: '#fff', borderRadius: 'var(--radius-sm)' }}
+              >
+                <Rocket size={16} />
+                <span>🚀 發布至官網</span>
+              </button>
+            </div>
           </aside>
 
           {/* Editor Content Area */}
           <main className="admin-content">
-            
+
+            {/* SUBTAB PUBLISH */}
+            {activeSubTab === 'publish' && (
+              <div>
+                <h2 className="admin-section-title">🚀 發布管理：一鍵發布至公開官網</h2>
+
+                {/* How it works */}
+                <div style={{
+                  background: 'linear-gradient(135deg, rgba(15,81,50,0.1) 0%, rgba(20,108,67,0.1) 100%)',
+                  border: '1px solid rgba(15,81,50,0.3)',
+                  borderRadius: 'var(--radius-sm)',
+                  padding: '1.25rem',
+                  marginBottom: '2rem',
+                  fontSize: '0.9rem',
+                  lineHeight: '1.8'
+                }}>
+                  <strong>💡 使用方式：</strong><br />
+                  1︎ 在左邊各分頁修改想要更新的內容<br />
+                  2︎ 回到此頁面，點【立即發布至官網】按鈕<br />
+                  3︎ 等待約 2～3 分鐘，官網內容自動更新完成 ✅
+                </div>
+
+                {/* Token Settings */}
+                <div style={{ background: 'var(--bg-secondary)', borderRadius: 'var(--radius-sm)', padding: '1.5rem', marginBottom: '2rem' }}>
+                  <h3 style={{ fontSize: '1rem', marginBottom: '1rem', color: 'var(--primary-color)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <Settings size={16} />
+                    發布權限設定（次設定即可）
+                  </h3>
+                  <div className="form-group">
+                    <label>GitHub Personal Access Token</label>
+                    <input
+                      type="password"
+                      className="form-control"
+                      value={githubToken}
+                      onChange={(e) => setGithubToken(e.target.value)}
+                      placeholder="輸入您收到的 GitHub Token（ghp_xxxx...)"
+                    />
+                    <small style={{ color: 'var(--text-muted)', display: 'block', marginTop: '0.5rem' }}>
+                      Token 將加密儲存於您的本機，不會上傳至任何地方。
+                    </small>
+                  </div>
+                  <button
+                    className="btn btn-secondary"
+                    onClick={handleSaveToken}
+                  >
+                    <Save size={16} />
+                    <span>儲存 Token 至本機</span>
+                  </button>
+                  {githubToken && (
+                    <span style={{ marginLeft: '1rem', fontSize: '0.85rem', color: '#146c43' }}>
+                      ✅ Token 已設定
+                    </span>
+                  )}
+                </div>
+
+                {/* Publish Button */}
+                <div style={{ textAlign: 'center', padding: '2rem', background: 'var(--bg-secondary)', borderRadius: 'var(--radius-sm)' }}>
+                  {publishStatus !== 'loading' ? (
+                    <button
+                      onClick={handlePublish}
+                      disabled={!githubToken.trim()}
+                      style={{
+                        background: githubToken.trim() ? 'linear-gradient(135deg, #0f5132 0%, #146c43 100%)' : 'var(--bg-secondary)',
+                        color: githubToken.trim() ? '#fff' : 'var(--text-muted)',
+                        border: 'none',
+                        borderRadius: 'var(--radius-md)',
+                        padding: '1rem 2.5rem',
+                        fontSize: '1.1rem',
+                        fontWeight: '700',
+                        cursor: githubToken.trim() ? 'pointer' : 'not-allowed',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.75rem',
+                        boxShadow: githubToken.trim() ? '0 4px 15px rgba(15,81,50,0.4)' : 'none',
+                        transition: 'all 0.2s ease',
+                      }}
+                    >
+                      <Rocket size={20} />
+                      立即發布至官網
+                    </button>
+                  ) : (
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.75rem', color: 'var(--primary-color)', fontSize: '1rem', fontWeight: '600' }}>
+                      <Loader size={20} style={{ animation: 'spin 1s linear infinite' }} />
+                      發布中，請稍候…
+                    </div>
+                  )}
+
+                  {/* Status Message */}
+                  {publishMessage && (
+                    <div style={{
+                      marginTop: '1.5rem',
+                      padding: '1rem',
+                      borderRadius: 'var(--radius-sm)',
+                      background: publishStatus === 'success' ? 'rgba(15,81,50,0.1)' : publishStatus === 'error' ? 'rgba(220,53,69,0.1)' : 'rgba(0,0,0,0.05)',
+                      color: publishStatus === 'success' ? '#0f5132' : publishStatus === 'error' ? '#dc3545' : 'var(--text-body)',
+                      border: `1px solid ${publishStatus === 'success' ? 'rgba(15,81,50,0.3)' : publishStatus === 'error' ? 'rgba(220,53,69,0.3)' : 'var(--border-color)'}`,
+                      fontSize: '0.95rem',
+                      fontWeight: '500',
+                    }}>
+                      {publishMessage}
+                      {publishStatus === 'success' && (
+                        <div style={{ marginTop: '0.75rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                          可前往 <a href="https://github.com/jayshih8/mizo-cleaning-web-/actions" target="_blank" rel="noreferrer" style={{ color: 'var(--primary-color)' }}>GitHub Actions</a> 查看建置進度。
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {!githubToken.trim() && (
+                    <p style={{ marginTop: '1rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                      請先在上方輸入發布 Token 才能使用此功能。
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* SUBTAB 1: COMPANY INFO */}
             {activeSubTab === 'company' && (
               <div>
@@ -441,8 +665,18 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
                     onChange={(e) => handleHomeChange('heroSubtitle', e.target.value)}
                   />
                 </div>
+                <div className="form-group">
+                  <label>CTA 按鈕文字 (首頁行動呼籲按鈕)</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={localData.home.ctaText || ''}
+                    onChange={(e) => handleHomeChange('ctaText', e.target.value)}
+                    placeholder="例如：免費現場評估與估價"
+                  />
+                </div>
                 
-                {/* Banner Image upload mockup */}
+                {/* Banner Image upload */}
                 <div className="form-group" style={{ marginBottom: '2.5rem' }}>
                   <label>首頁形象大圖 (Hero Banner Image)</label>
                   <div className="image-upload-zone" onClick={() => document.getElementById('heroBannerUpload').click()}>
@@ -497,6 +731,43 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
                     </div>
                   ))}
                 </div>
+
+                <h3 style={{ fontSize: '1.15rem', marginTop: '2.5rem', marginBottom: '1rem', color: 'var(--primary-color)' }}>四大統計數字 (Stats)</h3>
+                <div className="admin-grid">
+                  {(localData.home.stats || []).map((stat, index) => (
+                    <div key={index} className="admin-list-item">
+                      <div className="admin-list-item-header">
+                        <span className="admin-badge">統計 {index + 1}</span>
+                      </div>
+                      <div className="form-group">
+                        <label>數值 (例如：47+)</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          value={stat.number}
+                          onChange={(e) => {
+                            const newStats = JSON.parse(JSON.stringify(localData.home.stats));
+                            newStats[index].number = e.target.value;
+                            setLocalData(prev => ({ ...prev, home: { ...prev.home, stats: newStats } }));
+                          }}
+                        />
+                      </div>
+                      <div className="form-group" style={{ marginBottom: 0 }}>
+                        <label>標籤文字</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          value={stat.label}
+                          onChange={(e) => {
+                            const newStats = JSON.parse(JSON.stringify(localData.home.stats));
+                            newStats[index].label = e.target.value;
+                            setLocalData(prev => ({ ...prev, home: { ...prev.home, stats: newStats } }));
+                          }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 
@@ -504,6 +775,26 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
             {activeSubTab === 'about' && (
               <div>
                 <h2 className="admin-section-title">關於我們品牌與培訓管理</h2>
+                <div className="admin-grid">
+                  <div className="form-group">
+                    <label>頁面大標題</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={localData.about.title || ''}
+                      onChange={(e) => setLocalData(prev => ({ ...prev, about: { ...prev.about, title: e.target.value } }))}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>頁面副標題</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={localData.about.subtitle || ''}
+                      onChange={(e) => setLocalData(prev => ({ ...prev, about: { ...prev.about, subtitle: e.target.value } }))}
+                    />
+                  </div>
+                </div>
                 <div className="form-group">
                   <label>公司經營理念簡述 (Philosophy)</label>
                   <textarea
@@ -681,16 +972,25 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
             {activeSubTab === 'services' && (
               <div>
                 <h2 className="admin-section-title">服務項目內容維護</h2>
-                <div className="form-group">
-                  <label>服務清單頁副標題</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={localData.services.subtitle}
-                    onChange={(e) => {
-                      setLocalData(prev => ({ ...prev, services: { ...prev.services, subtitle: e.target.value } }));
-                    }}
-                  />
+                <div className="admin-grid">
+                  <div className="form-group">
+                    <label>頁面大標題</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={localData.services.title || ''}
+                      onChange={(e) => setLocalData(prev => ({ ...prev, services: { ...prev.services, title: e.target.value } }))}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>頁面副標題</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={localData.services.subtitle || ''}
+                      onChange={(e) => setLocalData(prev => ({ ...prev, services: { ...prev.services, subtitle: e.target.value } }))}
+                    />
+                  </div>
                 </div>
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '2rem', marginBottom: '1rem' }}>
@@ -789,16 +1089,25 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
             {activeSubTab === 'credentials' && (
               <div>
                 <h2 className="admin-section-title">專業證照與公會獎章管理</h2>
-                <div className="form-group">
-                  <label>證照清單頁副標題</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={localData.credentials.subtitle}
-                    onChange={(e) => {
-                      setLocalData(prev => ({ ...prev, credentials: { ...prev.credentials, subtitle: e.target.value } }));
-                    }}
-                  />
+                <div className="admin-grid">
+                  <div className="form-group">
+                    <label>頁面大標題</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={localData.credentials.title || ''}
+                      onChange={(e) => setLocalData(prev => ({ ...prev, credentials: { ...prev.credentials, title: e.target.value } }))}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>頁面副標題</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={localData.credentials.subtitle || ''}
+                      onChange={(e) => setLocalData(prev => ({ ...prev, credentials: { ...prev.credentials, subtitle: e.target.value } }))}
+                    />
+                  </div>
                 </div>
                 <div className="form-group">
                   <label>證照介紹導言</label>
@@ -886,6 +1195,145 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
                     </div>
                   </div>
                 ))}
+              </div>
+            )}
+
+            {/* SUBTAB 4.5: PROCESS TIMELINE */}
+            {activeSubTab === 'process' && (
+              <div>
+                <h2 className="admin-section-title">施工/清潔服務過程管理</h2>
+                <div className="form-group">
+                  <label>施工過程頁大標題</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={localData.process.title || ''}
+                    onChange={(e) => {
+                      setLocalData(prev => ({ ...prev, process: { ...prev.process, title: e.target.value } }));
+                    }}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>施工過程頁副標題</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={localData.process.subtitle || ''}
+                    onChange={(e) => {
+                      setLocalData(prev => ({ ...prev, process: { ...prev.process, subtitle: e.target.value } }));
+                    }}
+                  />
+                </div>
+
+                <div style={{ marginTop: '2.5rem', marginBottom: '1rem' }}>
+                  <h3 style={{ fontSize: '1.15rem', color: 'var(--primary-color)', margin: 0 }}>
+                    清潔施工作業步驟 (SOP Steps)
+                  </h3>
+                </div>
+
+                {localData.process.steps && localData.process.steps.map((step, index) => (
+                  <div key={index} className="admin-list-item">
+                    <div className="admin-list-item-header">
+                      <span className="admin-badge" style={{ backgroundColor: 'var(--secondary-color)' }}>
+                        步驟 {step.stepNumber || `0${index + 1}`}
+                      </span>
+                    </div>
+                    <div className="form-group">
+                      <label>步驟標題</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={step.title}
+                        onChange={(e) => {
+                          const newSteps = [...localData.process.steps];
+                          newSteps[index].title = e.target.value;
+                          setLocalData(prev => ({ ...prev, process: { ...prev.process, steps: newSteps } }));
+                        }}
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>步驟詳細描述</label>
+                      <textarea
+                        className="form-control"
+                        style={{ minHeight: '70px' }}
+                        value={step.description}
+                        onChange={(e) => {
+                          const newSteps = [...localData.process.steps];
+                          newSteps[index].description = e.target.value;
+                          setLocalData(prev => ({ ...prev, process: { ...prev.process, steps: newSteps } }));
+                        }}
+                      />
+                    </div>
+
+                    {/* Step Image upload */}
+                    <div className="form-group" style={{ marginBottom: 0 }}>
+                      <label>施工現場照片 (點擊上傳圖片，自動轉 Base64)</label>
+                      <div className="image-upload-zone" onClick={() => document.getElementById(`stepUpload-${index}`).click()}>
+                        <Info size={24} style={{ color: 'var(--text-muted)' }} />
+                        <span>點擊上傳照片以替換此步驟的現場相片</span>
+                        <input
+                          type="file"
+                          id={`stepUpload-${index}`}
+                          style={{ display: 'none' }}
+                          accept="image/*"
+                          onChange={(e) => handleImageUpload(['process', 'steps', index, 'image'], e.target.files[0])}
+                        />
+                        {step.image && (
+                          <img src={step.image} alt={`Step ${index + 1} Preview`} className="image-preview-thumbnail" />
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* SUBTAB 6: CONTACT PAGE */}
+            {activeSubTab === 'contact' && (
+              <div>
+                <h2 className="admin-section-title">聯絡我們頁面設定</h2>
+                <div className="form-group">
+                  <label>頁面大標題</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={(localData.contact && localData.contact.pageTitle) || ''}
+                    onChange={(e) => setLocalData(prev => ({
+                      ...prev,
+                      contact: { ...(prev.contact || {}), pageTitle: e.target.value }
+                    }))}
+                    placeholder="例如：聯絡我們"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>頁面副標題</label>
+                  <textarea
+                    className="form-control"
+                    style={{ minHeight: '70px' }}
+                    value={(localData.contact && localData.contact.subtitle) || ''}
+                    onChange={(e) => setLocalData(prev => ({
+                      ...prev,
+                      contact: { ...(prev.contact || {}), subtitle: e.target.value }
+                    }))}
+                    placeholder="例如：免費預約估價或業務洽詢，我們將有專人與您聯絡"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>表單區塊標題</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={(localData.contact && localData.contact.formTitle) || ''}
+                    onChange={(e) => setLocalData(prev => ({
+                      ...prev,
+                      contact: { ...(prev.contact || {}), formTitle: e.target.value }
+                    }))}
+                    placeholder="例如：線上預約與需求諮詢"
+                  />
+                </div>
+                <div style={{ marginTop: '1.5rem', padding: '1rem', background: 'var(--bg-secondary)', borderRadius: 'var(--radius-sm)', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                  💡 聯絡表單的欄位（姓名、電話、地址、服務類型、留言）為固定欄位，電話/傳真/Email/地址等公司聯絡資訊請至「公司基本資訊」分頁修改。
+                </div>
               </div>
             )}
 

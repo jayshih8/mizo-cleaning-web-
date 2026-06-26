@@ -160,5 +160,46 @@
         "image": "images/safety_cert.jpg"
       }
     ]
+  },
+  "process": {
+    "title": "施工/清潔服務過程",
+    "subtitle": "日式精工 SOP：從防護到完工，每一步驟皆代表我們對品質的極致追求",
+    "steps": [
+      {
+        "stepNumber": "01",
+        "title": "現場防護與前置準備",
+        "description": "對施工作業區域進行完整防護，避免清潔藥劑或污水波及周邊高價值機具、電器與裝潢設施。",
+        "image": "images/process_1.jpg"
+      },
+      {
+        "stepNumber": "02",
+        "title": "藥劑調配與均勻浸潤",
+        "description": "針對地面材質調配專屬日式環保清潔劑，均勻灑布並使其充分浸潤，軟化地表深層積油與髒污。",
+        "image": "images/process_2.jpg"
+      },
+      {
+        "stepNumber": "03",
+        "title": "重型洗地機具深度刷洗",
+        "description": "使用專業低噪洗地機配以合適刷頭，進行全面性深度刷洗，徹底清除舊蠟、殘膠與頑固污漬。",
+        "image": "images/process_4.jpg"
+      },
+      {
+        "stepNumber": "04",
+        "title": "木質/石材地坪精細去污",
+        "description": "針對木質地板或石材等細緻材質，採用低水量專用刷洗工法，防潮去污，保護地坪結構。",
+        "image": "images/process_5.jpg"
+      },
+      {
+        "stepNumber": "05",
+        "title": "完工晶化與鏡面保養",
+        "description": "施作晶化防護層並進行高速拋光，使地坪呈現鏡面光澤，不僅美觀更大幅增強耐磨防潮能力。",
+        "image": "images/process_3.jpg"
+      }
+    ]
+  },
+  "contact": {
+    "pageTitle": "聯絡我們",
+    "subtitle": "免費預約估價或業務洽詢，我們將有專人與您聯絡",
+    "formTitle": "線上預約與需求諮詢"
   }
 }

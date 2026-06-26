@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import { Phone, Mail, MapPin, Printer, Send, Clock, CheckCircle } from 'lucide-react';
 
-export default function Contact({ companyInfo }) {
+export default function Contact({ companyInfo, contactData }) {
+  // Fallback defaults if contactData not provided
+  const pageTitle = contactData?.pageTitle || '聯絡我們';
+  const subtitle = contactData?.subtitle || '免費預約估價或業務洽詢，我們將有專人與您聯絡';
+  const formTitle = contactData?.formTitle || '線上預約與需求諮詢';
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -44,8 +48,8 @@ export default function Contact({ companyInfo }) {
       <div className="container">
         {/* Page Title */}
         <div className="section-title-container">
-          <h1 className="section-title">聯絡我們</h1>
-          <p className="section-subtitle">免費預約估價或業務洽詢，我們將有專人與您聯絡</p>
+          <h1 className="section-title">{pageTitle}</h1>
+          <p className="section-subtitle">{subtitle}</p>
         </div>
 
         <div className="contact-grid">
@@ -93,7 +97,6 @@ export default function Contact({ companyInfo }) {
               <div className="contact-card-info">
                 <h3>總公司地址</h3>
                 <p style={{ margin: '0.25rem 0', fontSize: '0.9rem' }}>{companyInfo.address}</p>
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>台北市中山區民權東路一段53號11樓</span>
               </div>
             </div>
 
@@ -111,7 +114,7 @@ export default function Contact({ companyInfo }) {
           {/* Right Column: Contact form */}
           <div className="contact-form-wrap">
             <h2 style={{ fontSize: '1.5rem', marginBottom: '1.5rem', color: 'var(--primary-color)' }}>
-              線上預約與需求諮詢
+              {formTitle}
             </h2>
 
             {isSubmitted && (

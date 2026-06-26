@@ -1312,3 +1312,119 @@ textarea.form-control {
     padding: 2.5rem 1.5rem;
   }
 }
+
+/* Construction/Operations Process Page Styles */
+.process-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
+  margin-top: 3.5rem;
+}
+
+.process-step-card {
+  display: flex;
+  background: white;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-premium);
+  border: 1px solid rgba(229, 231, 235, 0.5);
+  transition: var(--transition-smooth);
+}
+
+.process-step-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.process-step-card:nth-child(even) {
+  flex-direction: row-reverse;
+}
+
+.process-step-image {
+  flex: 1.2;
+  min-height: 320px;
+  position: relative;
+  overflow: hidden;
+  background-color: #f1f5f9;
+}
+
+.process-step-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: var(--transition-smooth);
+}
+
+.process-step-card:hover .process-step-image img {
+  transform: scale(1.05);
+}
+
+.process-step-content {
+  flex: 1;
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+}
+
+.process-step-number {
+  font-family: var(--font-display);
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: rgba(13, 148, 136, 0.15);
+  position: absolute;
+  top: 1.5rem;
+  right: 2rem;
+  line-height: 1;
+}
+
+.process-step-card:nth-child(even) .process-step-number {
+  right: auto;
+  left: 2rem;
+}
+
+.process-step-content h3 {
+  font-size: 1.5rem;
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+  font-weight: 700;
+  position: relative;
+  z-index: 1;
+}
+
+.process-step-content p {
+  color: var(--text-muted);
+  font-size: 1.05rem;
+  line-height: 1.7;
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 992px) {
+  .process-step-card, .process-step-card:nth-child(even) {
+    flex-direction: column;
+  }
+  .process-step-image {
+    min-height: 260px;
+  }
+  .process-step-content {
+    padding: 2rem;
+  }
+  .process-step-number {
+    top: 1rem;
+    right: 1.5rem;
+    font-size: 2.75rem;
+  }
+  .process-step-card:nth-child(even) .process-step-number {
+    left: auto;
+    right: 1.5rem;
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+

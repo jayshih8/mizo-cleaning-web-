@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import About from './pages/About';
 import Services from './pages/Services';
 import Credentials from './pages/Credentials';
+import Process from './pages/Process';
 import Contact from './pages/Contact';
 import AdminEditor from './pages/AdminEditor';
 
@@ -28,6 +29,8 @@ export default function App() {
         setActiveTab('about');
       } else if (hash === '#/services' || hash === '#services') {
         setActiveTab('services');
+      } else if (hash === '#/process' || hash === '#process') {
+        setActiveTab('process');
       } else if (hash === '#/credentials' || hash === '#credentials') {
         setActiveTab('credentials');
       } else if (hash === '#/contact' || hash === '#contact') {
@@ -40,16 +43,16 @@ export default function App() {
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
-  // Update hash when activeTab changes
+  // Sync hash to activeTab whenever tab changes
   useEffect(() => {
-    const hash = window.location.hash;
     if (activeTab === 'admin') {
-      if (hash !== '#/admin-portal') {
+      if (window.location.hash !== '#/admin-portal') {
         window.location.hash = '#/admin-portal';
       }
     } else {
-      if (hash === '#/admin-portal' || hash === '#/admin' || hash === '#admin') {
-        window.location.hash = '#/home';
+      const newHash = `#/${activeTab}`;
+      if (window.location.hash !== newHash) {
+        window.location.hash = newHash;
       }
     }
   }, [activeTab]);
@@ -58,7 +61,19 @@ export default function App() {
   const [config, setConfig] = useState(() => {
     try {
       const saved = localStorage.getItem('mizo_config');
-      return saved ? JSON.parse(saved) : initialConfig;
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return {
+          company: { ...initialConfig.company, ...parsed.company },
+          home: { ...initialConfig.home, ...parsed.home },
+          about: { ...initialConfig.about, ...parsed.about },
+          services: { ...initialConfig.services, ...parsed.services },
+          credentials: { ...initialConfig.credentials, ...parsed.credentials },
+          process: { ...initialConfig.process, ...parsed.process },
+          contact: { ...initialConfig.contact, ...(parsed.contact || {}) },
+        };
+      }
+      return initialConfig;
     } catch (e) {
       console.error('Failed to parse saved config from localStorage', e);
       return initialConfig;
@@ -92,10 +107,12 @@ export default function App() {
         return <About aboutData={config.about} />;
       case 'services':
         return <Services servicesData={config.services} />;
+      case 'process':
+        return <Process processData={config.process} />;
       case 'credentials':
         return <Credentials credentialsData={config.credentials} />;
       case 'contact':
-        return <Contact companyInfo={config.company} />;
+        return <Contact companyInfo={config.company} contactData={config.contact} />;
       case 'admin':
         return (
           <AdminEditor

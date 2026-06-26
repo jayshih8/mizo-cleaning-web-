@@ -8,6 +8,7 @@ export default function Header({ activeTab, setActiveTab, companyInfo }) {
     { id: 'home', name: '首頁' },
     { id: 'about', name: '關於我們' },
     { id: 'services', name: '服務項目' },
+    { id: 'process', name: '施工過程' },
     { id: 'credentials', name: '專業證照' },
     { id: 'contact', name: '聯絡我們' },
   ];
