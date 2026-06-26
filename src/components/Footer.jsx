@@ -74,6 +74,31 @@ export default function Footer({ setActiveTab, companyInfo }) {
 
         <div className="footer-bottom">
           <p>© {new Date().getFullYear()} {companyInfo.name || '美裝公寓大廈管理維護股份有限公司'} All rights reserved.</p>
+          <div className="footer-designer" style={{ opacity: 0.8, fontSize: '0.825rem' }}>
+            <span style={{ color: '#64748b' }}>網頁設計：</span>
+            <a 
+              href="https://www.facebook.com/YungChangShih" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="designer-link"
+              style={{ 
+                color: '#64748b', 
+                textDecoration: 'none', 
+                fontWeight: 500,
+                transition: 'color 0.2s ease, text-decoration 0.2s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.color = 'var(--primary-color, #3b82f6)';
+                e.target.style.textDecoration = 'underline';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.color = '#64748b';
+                e.target.style.textDecoration = 'none';
+              }}
+            >
+              YUNG CHANG
+            </a>
+          </div>
         </div>
       </div>
     </footer>
