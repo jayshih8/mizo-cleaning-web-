@@ -122,26 +122,71 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
     }));
   };
 
-  // Image Upload helper to convert file to Base64
+  // Image Upload helper to convert file to Base64 and compress it
   const handleImageUpload = (fieldPath, file) => {
     if (!file) return;
     const reader = new FileReader();
     reader.onload = (e) => {
-      const base64Data = e.target.result;
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
 
-      // Deep-clone to avoid shared reference mutations with nested arrays
-      const newData = JSON.parse(JSON.stringify(localData));
-      let current = newData;
-      for (let i = 0; i < fieldPath.length - 1; i++) {
-        current = current[fieldPath[i]];
-      }
-      current[fieldPath[fieldPath.length - 1]] = base64Data;
+        // Dynamic max dimension based on field path
+        let maxDim = 1200; // Default for normal page images
+        const isLogo = fieldPath.includes('logoImage');
+        const isFavicon = fieldPath.includes('favicon');
 
-      setLocalData(newData);
-      showToast('圖片上傳並轉換 Base64 成功！');
+        if (isLogo) {
+          maxDim = 400; // Logos do not need to be huge
+        } else if (isFavicon) {
+          maxDim = 128; // Favicon can be very small
+        }
+
+        // Resize if exceeds max dimension
+        if (width > maxDim || height > maxDim) {
+          if (width > height) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          } else {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // Compress options
+        let mimeType = 'image/jpeg';
+        let quality = 0.85;
+
+        // Preserve PNG transparency for logo and favicon
+        if (isLogo || isFavicon) {
+          mimeType = 'image/png';
+        }
+
+        const compressedBase64 = canvas.toDataURL(mimeType, quality);
+
+        // Deep-clone to avoid shared reference mutations with nested arrays
+        const newData = JSON.parse(JSON.stringify(localData));
+        let current = newData;
+        for (let i = 0; i < fieldPath.length - 1; i++) {
+          current = current[fieldPath[i]];
+        }
+        current[fieldPath[fieldPath.length - 1]] = compressedBase64;
+
+        setLocalData(newData);
+        showToast('圖片上傳並自動壓縮成功！');
+      };
+      img.src = e.target.result;
     };
     reader.readAsDataURL(file);
   };
+
 
   const handleSave = () => {
     onSave(localData);
