@@ -22,7 +22,7 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
   const handlePublish = async () => {
     if (!githubToken.trim()) {
       setPublishStatus('error');
-      setPublishMessage('請先輸入 GitHub Personal Access Token！');
+      setPublishMessage('請先輸入發布授權憑證金鑰！');
       return;
     }
 
@@ -32,7 +32,7 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
     const API_URL = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`;
 
     setPublishStatus('loading');
-    setPublishMessage('正在連線至 GitHub…');
+    setPublishMessage('正在連線至發布伺服器…');
 
     try {
       // Step 1: Get current file SHA (required for update)
@@ -79,7 +79,7 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
       }
 
       setPublishStatus('success');
-      setPublishMessage('✅ 已成功推送至 GitHub！網站將在約 2-3 分鐘後自動更新。');
+      setPublishMessage('✅ 網站內容已成功發布！新內容將在約 1-2 分鐘後自動更新。');
 
       // Also save locally
       onSave(localData);
@@ -92,7 +92,7 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
 
   const handleSaveToken = () => {
     localStorage.setItem('mizo_gh_token', githubToken);
-    showToast('GitHub Token 已儲存至本機！');
+    showToast('發布憑證金鑰已儲存至本機！');
   };
 
   const showToast = (msg) => {
@@ -620,19 +620,19 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
                 <div style={{ background: 'var(--bg-secondary)', borderRadius: 'var(--radius-sm)', padding: '1.5rem', marginBottom: '2rem' }}>
                   <h3 style={{ fontSize: '1rem', marginBottom: '1rem', color: 'var(--primary-color)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <Settings size={16} />
-                    發布權限設定（次設定即可）
+                    發布權限設定（一次設定即可）
                   </h3>
                   <div className="form-group">
-                    <label>GitHub Personal Access Token</label>
+                    <label>發布授權憑證金鑰 (Publish Token)</label>
                     <input
                       type="password"
                       className="form-control"
                       value={githubToken}
                       onChange={(e) => setGithubToken(e.target.value)}
-                      placeholder="輸入您收到的 GitHub Token（ghp_xxxx...)"
+                      placeholder="輸入您收到的發布授權憑證金鑰..."
                     />
                     <small style={{ color: 'var(--text-muted)', display: 'block', marginTop: '0.5rem' }}>
-                      Token 將加密儲存於您的本機，不會上傳至任何地方。
+                      發布憑證將安全儲存於您的瀏覽器本機，不會上傳至其他非授權的伺服器。
                     </small>
                   </div>
                   <button
@@ -640,11 +640,11 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
                     onClick={handleSaveToken}
                   >
                     <Save size={16} />
-                    <span>儲存 Token 至本機</span>
+                    <span>儲存發布憑證至本機</span>
                   </button>
                   {githubToken && (
                     <span style={{ marginLeft: '1rem', fontSize: '0.85rem', color: '#146c43' }}>
-                      ✅ Token 已設定
+                      ✅ 憑證已設定
                     </span>
                   )}
                 </div>
@@ -694,17 +694,12 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
                       fontWeight: '500',
                     }}>
                       {publishMessage}
-                      {publishStatus === 'success' && (
-                        <div style={{ marginTop: '0.75rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                          可前往 <a href="https://github.com/jayshih8/mizo-cleaning-web-/actions" target="_blank" rel="noreferrer" style={{ color: 'var(--primary-color)' }}>GitHub Actions</a> 查看建置進度。
-                        </div>
-                      )}
                     </div>
                   )}
 
                   {!githubToken.trim() && (
                     <p style={{ marginTop: '1rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                      請先在上方輸入發布 Token 才能使用此功能。
+                      請先在上方輸入發布憑證金鑰才能使用此功能。
                     </p>
                   )}
                 </div>
