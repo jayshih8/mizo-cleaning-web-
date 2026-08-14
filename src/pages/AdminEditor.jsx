@@ -2,7 +2,20 @@ import React, { useState } from 'react';
 import { Save, Download, RotateCcw, AlertTriangle, FileText, Info, Plus, Trash, LogOut, Rocket, Settings, CheckCircle2, XCircle, Loader, Upload, Lock } from 'lucide-react';
 
 export default function AdminEditor({ configData, onSave, onReset, setActiveTab }) {
-  const [localData, setLocalData] = useState(JSON.parse(JSON.stringify(configData)));
+  const [localData, setLocalData] = useState(() => {
+    const cloned = JSON.parse(JSON.stringify(configData));
+    cloned.home ||= {};
+    const normalizedCases = Array.isArray(cloned.home.cases) ? cloned.home.cases : [];
+    while (normalizedCases.length < 4) {
+      normalizedCases.push({ title: '工程實績 ' + (normalizedCases.length + 1), category: '專業清潔維護', description: '請在後台更新此格工程實績說明。', image: '' });
+    }
+    cloned.home.cases = normalizedCases.slice(0, 4);
+    const normalizedCore = Array.isArray(cloned.home.coreProjects) ? cloned.home.coreProjects : [];
+    while (normalizedCore.length < 4) normalizedCore.push(JSON.parse(JSON.stringify(cloned.home.cases[normalizedCore.length])));
+    cloned.home.coreProjects = normalizedCore.slice(0, 4);
+    delete cloned.home.testimonials;
+    return cloned;
+  });
   const [activeSubTab, setActiveSubTab] = useState('company');
   const [toastMessage, setToastMessage] = useState('');
   
@@ -1125,10 +1138,52 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
                   ))}
                 </div>
 
+                {/* 首頁核心工程實績四格圖 */}
+                <div style={{ marginTop: '2.5rem', marginBottom: '1rem' }}>
+                  <h3 style={{ fontSize: '1.15rem', color: 'var(--primary-color)', marginBottom: '0.35rem' }}>首頁核心工程實績四格圖</h3>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', margin: 0 }}>固定四格，對應前台「日式標準，頂規施工」右側圖片。每格皆可更新圖片、類別、標題與說明。</p>
+                </div>
+                <div className="admin-grid">
+                  {(localData.home.coreProjects || []).slice(0, 4).map((project, index) => (
+                    <div key={index} className="admin-list-item">
+                      <div className="admin-list-item-header"><span className="admin-badge">核心實績 {index + 1}</span></div>
+                      <div className="form-group">
+                        <label>標題</label>
+                        <input type="text" className="form-control" value={project.title || ''} onChange={(e) => {
+                          const items = [...localData.home.coreProjects]; items[index] = { ...items[index], title: e.target.value };
+                          setLocalData(prev => ({ ...prev, home: { ...prev.home, coreProjects: items } }));
+                        }} />
+                      </div>
+                      <div className="form-group">
+                        <label>類別標籤</label>
+                        <input type="text" className="form-control" value={project.category || ''} onChange={(e) => {
+                          const items = [...localData.home.coreProjects]; items[index] = { ...items[index], category: e.target.value };
+                          setLocalData(prev => ({ ...prev, home: { ...prev.home, coreProjects: items } }));
+                        }} />
+                      </div>
+                      <div className="form-group">
+                        <label>圖片</label>
+                        <div className="image-upload-zone" onClick={() => document.getElementById('coreProjectUpload-' + index).click()}>
+                          <Info size={24} style={{ color: 'var(--text-muted)' }} />
+                          <span>點擊上傳四格圖片</span>
+                          <input type="file" id={'coreProjectUpload-' + index} style={{ display: 'none' }} accept="image/*" onChange={(e) => handleImageUpload(['home', 'coreProjects', index, 'image'], e.target.files[0])} />
+                          {project.image && <img src={project.image} alt={'核心實績 ' + (index + 1)} className="image-preview-thumbnail" />}
+                        </div>
+                      </div>
+                      <div className="form-group" style={{ marginBottom: 0 }}>
+                        <label>說明</label>
+                        <textarea className="form-control" style={{ minHeight: '60px' }} value={project.description || ''} onChange={(e) => {
+                          const items = [...localData.home.coreProjects]; items[index] = { ...items[index], description: e.target.value };
+                          setLocalData(prev => ({ ...prev, home: { ...prev.home, coreProjects: items } }));
+                        }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
                 {/* 近期施工實績管理 (NEW) */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '2.5rem', marginBottom: '1rem' }}>
                   <h3 style={{ fontSize: '1.15rem', color: 'var(--primary-color)', margin: 0 }}>
-                    近期施工實績 (Recent Case Showcase)
+                    近期施工實績四格圖 (Recent Case Showcase)
                   </h3>
                   <button
                     onClick={handleAddCase}
@@ -1215,91 +1270,7 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
                   ))}
                 </div>
 
-                {/* 客戶口碑見證管理 (NEW) */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '2.5rem', marginBottom: '1rem' }}>
-                  <h3 style={{ fontSize: '1.15rem', color: 'var(--primary-color)', margin: 0 }}>
-                    客戶口碑見證 (Client Testimonials)
-                  </h3>
-                  <button
-                    onClick={handleAddTestimonial}
-                    className="btn btn-secondary"
-                    style={{ padding: '0.4rem 1rem', fontSize: '0.85rem', display: 'flex', gap: '0.25rem', alignItems: 'center' }}
-                  >
-                    <Plus size={14} />
-                    <span>新增客戶見證</span>
-                  </button>
-                </div>
-                <div>
-                  {(localData.home.testimonials || []).map((t, index) => (
-                    <div key={index} className="admin-list-item">
-                      <div className="admin-list-item-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span className="admin-badge">口碑評價 {index + 1}</span>
-                        <button
-                          onClick={() => handleDeleteTestimonial(index)}
-                          className="btn btn-outline"
-                          style={{ borderColor: '#ef4444', color: '#ef4444', padding: '0.25rem 0.5rem', fontSize: '0.8rem', display: 'flex', gap: '0.25rem', alignItems: 'center' }}
-                        >
-                          <Trash size={12} />
-                          <span>刪除見證</span>
-                        </button>
-                      </div>
-                      <div className="admin-grid">
-                        <div className="form-group">
-                          <label>客戶姓名/稱呼 (例如：張經理)</label>
-                          <input
-                            type="text"
-                            className="form-control"
-                            value={t.name || ''}
-                            onChange={(e) => {
-                              const newTestimonials = [...(localData.home.testimonials || [])];
-                              newTestimonials[index].name = e.target.value;
-                              setLocalData(prev => ({ ...prev, home: { ...prev.home, testimonials: newTestimonials } }));
-                            }}
-                          />
-                        </div>
-                        <div className="form-group">
-                          <label>職稱 (例如：主任委員、房務部協理)</label>
-                          <input
-                            type="text"
-                            className="form-control"
-                            value={t.role || ''}
-                            onChange={(e) => {
-                              const newTestimonials = [...(localData.home.testimonials || [])];
-                              newTestimonials[index].role = e.target.value;
-                              setLocalData(prev => ({ ...prev, home: { ...prev.home, testimonials: newTestimonials } }));
-                            }}
-                          />
-                        </div>
-                        <div className="form-group admin-grid-full">
-                          <label>公司或大樓名稱</label>
-                          <input
-                            type="text"
-                            className="form-control"
-                            value={t.company || ''}
-                            onChange={(e) => {
-                              const newTestimonials = [...(localData.home.testimonials || [])];
-                              newTestimonials[index].company = e.target.value;
-                              setLocalData(prev => ({ ...prev, home: { ...prev.home, testimonials: newTestimonials } }));
-                            }}
-                          />
-                        </div>
-                        <div className="form-group admin-grid-full" style={{ marginBottom: 0 }}>
-                          <label>好評回饋詳細文字</label>
-                          <textarea
-                            className="form-control"
-                            style={{ minHeight: '60px' }}
-                            value={t.feedback || ''}
-                            onChange={(e) => {
-                              const newTestimonials = [...(localData.home.testimonials || [])];
-                              newTestimonials[index].feedback = e.target.value;
-                              setLocalData(prev => ({ ...prev, home: { ...prev.home, testimonials: newTestimonials } }));
-                            }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+
               </div>
             )}
 

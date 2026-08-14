@@ -1,5 +1,5 @@
 import React from 'react';
-import { Award, Zap, ShieldCheck, BookOpen, ArrowRight, Star, MessageSquare } from 'lucide-react';
+import { Award, Zap, ShieldCheck, BookOpen, ArrowRight } from 'lucide-react';
 
 export default function Home({ homeData, companyInfo, servicesData, setActiveTab }) {
   const getIcon = (index) => {
@@ -34,6 +34,21 @@ export default function Home({ homeData, companyInfo, servicesData, setActiveTab
       default: return 'images/banner_building.png';
     }
   };
+
+  const fallbackCoreProjects = [
+    ...(homeData.cases || []),
+    ...((servicesData && servicesData.items) || []).map((item) => ({
+      title: item.title,
+      category: '專業清潔服務',
+      description: item.description,
+      image: getServiceImage(item),
+    })),
+    { title: '馥華艾美酒店清潔維護', category: '飯店清潔與日常保養', description: '頂級飯店公共區域與客房長期日常維護。', image: 'images/hotel.jpg' },
+    { title: '商辦大樓與廠辦清潔', category: '商辦大樓與廠辦清潔', description: '大型園區、辦公大樓與廠辦空間的高標準清潔維護。', image: 'images/banner_building.png' },
+    { title: '綜合醫院消毒清潔服務', category: '醫療院所高規格清潔', description: '針對病房與公共區域執行高規格清潔及衛生管理。', image: 'images/training.jpg' },
+    { title: '企業辦公空間日常維護', category: '辦公空間清潔', description: '依照企業需求規劃穩定、細緻的日常環境維護。', image: 'images/history.jpg' },
+  ];
+  const coreProjects = (homeData.coreProjects && homeData.coreProjects.length > 0 ? homeData.coreProjects : fallbackCoreProjects).slice(0, 4);
 
   return (
     <div className="animate-fade-in">
@@ -97,34 +112,25 @@ export default function Home({ homeData, companyInfo, servicesData, setActiveTab
               </div>
             </div>
 
-            {/* Visual Collage Card */}
-            <div style={{ position: 'relative', height: '420px', borderRadius: 'var(--radius-lg)', overflow: 'hidden', boxShadow: 'var(--shadow-premium)' }}>
-              <div
-                style={{
-                  backgroundImage: "url('images/hotel.jpg')",
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  width: '100%',
-                  height: '100%',
-                }}
-              />
-              <div
-                style={{
-                  position: 'absolute',
-                  bottom: '2rem',
-                  left: '2rem',
-                  right: '2rem',
-                  backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                  padding: '1.5rem',
-                  borderRadius: 'var(--radius-md)',
-                  backdropFilter: 'blur(8px)',
-                  boxShadow: 'var(--shadow-lg)'
-                }}
-              >
-                <span style={{ fontSize: '0.8rem', fontWeight: '700', color: 'var(--secondary-color)', textTransform: 'uppercase', letterSpacing: '1px' }}>核心工程實績</span>
-                <h4 style={{ margin: '0.25rem 0 0.5rem', fontSize: '1.15rem' }}>馥華艾美酒店清潔維護</h4>
-                <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', margin: 0 }}>頂級奢華酒店公共區域與客房長期日常維護實績</p>
-              </div>
+            {/* Core Projects Four-grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '1rem' }}>
+              {coreProjects.map((project, index) => (
+                <article
+                  key={index}
+                  style={{ position: 'relative', minHeight: '200px', borderRadius: 'var(--radius-lg)', overflow: 'hidden', boxShadow: 'var(--shadow-md)', background: '#e2e8f0' }}
+                >
+                  <img
+                    src={project.image || 'images/banner_building.png'}
+                    alt={project.title || ('核心工程實績 ' + (index + 1))}
+                    style={{ width: '100%', height: '100%', minHeight: '200px', objectFit: 'cover', display: 'block' }}
+                  />
+                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(11,28,61,0.04) 35%, rgba(11,28,61,0.78) 100%)' }} />
+                  <div style={{ position: 'absolute', left: '1rem', right: '1rem', bottom: '1rem', color: '#fff' }}>
+                    <span style={{ fontSize: '0.72rem', fontWeight: '700', opacity: 0.92 }}>{project.category || '核心工程實績'}</span>
+                    <h4 style={{ margin: '0.2rem 0 0', color: '#fff', fontSize: '1rem', lineHeight: 1.35 }}>{project.title}</h4>
+                  </div>
+                </article>
+              ))}
             </div>
           </div>
         </div>
@@ -189,8 +195,8 @@ export default function Home({ homeData, companyInfo, servicesData, setActiveTab
               <p className="section-subtitle">累積各大商辦大樓、五星級飯店與科技廠房的標竿清潔案例</p>
             </div>
             
-            <div className="grid-3" style={{ gap: '2rem' }}>
-              {homeData.cases.map((c, idx) => (
+            <div className="grid-4" style={{ gap: '1.5rem' }}>
+              {homeData.cases.slice(0, 4).map((c, idx) => (
                 <div key={idx} className="case-card" style={{ display: 'flex', flexDirection: 'column', borderRadius: 'var(--radius-lg)', overflow: 'hidden', boxShadow: 'var(--shadow-md)', backgroundColor: '#fff', border: '1px solid #e2e8f0', transition: 'transform 0.3s ease' }}>
                   <div className="case-image-wrapper" style={{ height: '240px', overflow: 'hidden', position: 'relative' }}>
                     <img
@@ -217,61 +223,6 @@ export default function Home({ homeData, companyInfo, servicesData, setActiveTab
         </section>
       )}
 
-      {/* NEW: Client Testimonials Section */}
-      {homeData.testimonials && homeData.testimonials.length > 0 && (
-        <section className="section-padding" id="testimonials" style={{ background: 'linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%)', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0' }}>
-          <div className="container">
-            <div className="section-title-container">
-              <h2 className="section-title">客戶口碑好評</h2>
-              <p className="section-subtitle">企業經理、廠房主管與管委會委員對美裝日規清潔服務的真實評價</p>
-            </div>
-            
-            <div className="grid-3" style={{ gap: '2rem' }}>
-              {homeData.testimonials.map((t, idx) => (
-                <div key={idx} className="testimonial-card animate-fade-in" style={{ backgroundColor: 'white', padding: '2.25rem', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-premium)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative', border: '1px solid rgba(11,28,61,0.03)' }}>
-                  
-                  {/* Quote icon markup */}
-                  <div style={{ position: 'absolute', top: '1.5rem', right: '2rem', opacity: 0.08, color: 'var(--primary-color)' }}>
-                    <MessageSquare size={48} />
-                  </div>
-                  
-                  <div>
-                    {/* Stars */}
-                    <div style={{ display: 'flex', gap: '0.2rem', marginBottom: '1.25rem', color: '#f59e0b' }}>
-                      <Star size={16} fill="#f59e0b" />
-                      <Star size={16} fill="#f59e0b" />
-                      <Star size={16} fill="#f59e0b" />
-                      <Star size={16} fill="#f59e0b" />
-                      <Star size={16} fill="#f59e0b" />
-                    </div>
-                    
-                    {/* Feedback content */}
-                    <p style={{ fontStyle: 'normal', color: 'var(--text-body)', fontSize: '0.925rem', lineHeight: '1.8', marginBottom: '1.75rem', position: 'relative', zIndex: 1 }}>
-                      「{t.feedback}」
-                    </p>
-                  </div>
-                  
-                  {/* User info */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', borderTop: '1px solid #f1f5f9', paddingTop: '1.25rem', marginTop: 'auto' }}>
-                    <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'rgba(11,28,61,0.05)', color: 'var(--primary-color)', display: 'flex', alignItems: 'center', justifyContext: 'center', justifyContent: 'center', fontSize: '1rem', fontWeight: '700' }}>
-                      {t.name[0] || '客'}
-                    </div>
-                    <div>
-                      <h4 style={{ margin: 0, fontSize: '0.9rem', color: 'var(--primary-color)', fontWeight: '700' }}>
-                        {t.name} <span style={{ fontWeight: 'normal', fontSize: '0.8rem', color: 'var(--text-muted)' }}>{t.role}</span>
-                      </h4>
-                      <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--secondary-color)', fontWeight: '600' }}>
-                        {t.company}
-                      </p>
-                    </div>
-                  </div>
-                  
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
 
 
       {/* Dynamic CTA Banner */}
