@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import FloatingWidget from './components/FloatingWidget';
-import Home from './pages/Home';
+import Home from './pages/HomeEnhanced';
 import About from './pages/About';
 import Services from './pages/Services';
 import Credentials from './pages/Credentials';
-import Process from './pages/Process';
+import Process from './pages/ProcessEnhanced';
 import Contact from './pages/Contact';
-import AdminEditor from './pages/AdminEditor';
+import AdminEditor from './pages/AdminEditorEnhanced';
 
 // Import initial static content JSON
 import initialConfig from './data/contentConfig.json';
