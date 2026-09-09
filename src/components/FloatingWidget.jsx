@@ -39,7 +39,7 @@ export default function FloatingWidget({ companyInfo }) {
 
       {/* Phone Call Floating Button */}
       <a
-        href={`tel:${companyInfo.phone}`}
+        href={`tel:${(companyInfo.phoneFormatted || companyInfo.phone).replace(/[^+\d]/g, '')}`}
         className="float-btn float-phone"
         title="撥打電話"
       >

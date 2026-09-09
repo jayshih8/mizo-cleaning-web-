@@ -10,6 +10,10 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+.ssr/
+legacy-pages/
+public/media/
+src/data/siteContent.generated.json
 *.local
 
 # Editor directories and files

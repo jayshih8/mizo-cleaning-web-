@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { lazy, Suspense, useEffect, useMemo, useState } from 'react';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import FloatingWidget from './components/FloatingWidget';
@@ -8,311 +8,95 @@ import Services from './pages/Services';
 import Credentials from './pages/Credentials';
 import Process from './pages/Process';
 import Contact from './pages/Contact';
-import AdminEditor from './pages/AdminEditor';
+import initialConfig from './data/siteContent.generated.json';
+import { applyPageSeo, pageFromPath, PUBLIC_PAGES } from './lib/seo';
 
-// Import initial static content JSON
-import initialConfig from './data/contentConfig.json';
+// Load original editable images and admin code only when the admin portal opens.
+const AdminPage = lazy(() => import('./pages/AdminPage'));
 
-export default function App() {
-  // Navigation active tab state: 'home' | 'about' | 'services' | 'credentials' | 'contact' | 'admin'
-  const [activeTab, setActiveTab] = useState('home');
+export default function App({ initialPath }) {
+  const [pathname, setPathname] = useState(() => initialPath ?? (typeof window === 'undefined' ? '/' : window.location.pathname));
+  const [config, setConfig] = useState(initialConfig);
+  const [adminDraft, setAdminDraft] = useState(null);
+  const page = useMemo(() => pageFromPath(pathname), [pathname]);
 
-  // Helper to map pathname to activeTab ID
-  const getTabFromPath = (pathname) => {
-    // Remove leading and trailing slashes and split by query string
-    const cleanPath = pathname.split('?')[0].replace(/^\/|\/$/g, '');
-    if (cleanPath === 'admin-portal' || cleanPath === 'admin') {
-      return 'admin';
-    }
-    if (!cleanPath || cleanPath === 'home') {
-      return 'home';
-    }
-    const validTabs = ['about', 'services', 'process', 'credentials', 'contact'];
-    if (validTabs.includes(cleanPath)) {
-      return cleanPath;
-    }
-    return 'home';
+  const navigate = (tab) => {
+    const path = tab === 'admin' ? '/admin-portal' : PUBLIC_PAGES.find(item => item.id === tab)?.path || '/';
+    if (window.location.pathname !== path) window.history.pushState({}, '', path);
+    setPathname(path);
   };
 
-  // Monitor pathname changes (popstate event for browser back/forward buttons)
   useEffect(() => {
-    // Print styled signature to browser developer console
-    console.log(
-      '%c網頁設計：YUNG CHANG %chttps://www.facebook.com/YungChangShih',
-      'color: #0ea5e9; font-weight: bold; font-size: 13px; font-family: system-ui, -apple-system, sans-serif; padding: 4px 0;',
-      'color: #64748b; font-size: 12px; font-family: system-ui, -apple-system, sans-serif; padding: 4px 0; margin-left: 8px;'
-    );
-
-    const handleLocationChange = () => {
-      const tab = getTabFromPath(window.location.pathname);
-      setActiveTab(tab);
-    };
-
-    handleLocationChange();
-    window.addEventListener('popstate', handleLocationChange);
-    return () => window.removeEventListener('popstate', handleLocationChange);
+    const update = () => setPathname(window.location.pathname);
+    window.addEventListener('popstate', update);
+    return () => window.removeEventListener('popstate', update);
   }, []);
 
-  // Sync pathname to activeTab whenever tab changes
   useEffect(() => {
-    const currentTab = getTabFromPath(window.location.pathname);
-    if (activeTab !== currentTab) {
-      let newPath = '/';
-      if (activeTab === 'admin') {
-        newPath = '/admin-portal';
-      } else if (activeTab !== 'home') {
-        newPath = `/${activeTab}`;
-      }
-      window.history.pushState({}, '', newPath);
-    }
-  }, [activeTab]);
+    applyPageSeo(page, config);
+    const hash = window.location.hash.slice(1);
+    if (hash) document.getElementById(hash)?.scrollIntoView({ block: 'start' });
+    else window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [page, config]);
 
-  // Scroll to top of the page when activeTab changes
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'instant' });
-  }, [activeTab]);
-
-  // Load configuration from localStorage if edit session exists, fallback to imported json
-  const [config, setConfig] = useState(() => {
-    try {
-      const saved = localStorage.getItem('mizo_config');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        return {
-          company: { ...initialConfig.company, ...parsed.company },
-          home: { ...initialConfig.home, ...parsed.home },
-          about: { ...initialConfig.about, ...parsed.about },
-          services: { ...initialConfig.services, ...parsed.services },
-          credentials: { ...initialConfig.credentials, ...parsed.credentials },
-          process: { ...initialConfig.process, ...parsed.process },
-          contact: { ...initialConfig.contact, ...(parsed.contact || {}) },
-        };
-      }
-      return initialConfig;
-    } catch (e) {
-      console.error('Failed to parse saved config from localStorage', e);
-      return initialConfig;
+    const id = config.company.gaId?.trim();
+    if (!/^G-[A-Z0-9]+$/.test(id || '')) return;
+    window.dataLayer ||= [];
+    window.gtag ||= function () { window.dataLayer.push(arguments); };
+    let loader = document.getElementById('google-analytics-gtag-loader');
+    if (!loader) {
+      loader = document.createElement('script');
+      loader.id = 'google-analytics-gtag-loader';
+      loader.async = true;
+      loader.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(id);
+      document.head.append(loader);
+      window.gtag('js', new Date());
     }
-  });
+    window.gtag('config', id, { send_page_view: false });
+  }, [config.company.gaId]);
 
-  // Dynamic Favicon Update Effect
   useEffect(() => {
-    const faviconUrl = config?.company?.favicon;
-    let link = document.querySelector("link[rel~='icon']");
-    if (!link) {
-      link = document.createElement('link');
-      link.rel = 'icon';
-      document.getElementsByTagName('head')[0].appendChild(link);
+    if (window.gtag && /^G-[A-Z0-9]+$/.test(config.company.gaId || '') && !['admin', 'not-found'].includes(page.id)) {
+      window.gtag('event', 'page_view', { send_to: config.company.gaId, page_path: page.path, page_location: window.location.href, page_title: document.title });
     }
-    if (faviconUrl) {
-      link.href = faviconUrl;
-      link.type = faviconUrl.startsWith('data:image/svg+xml') ? 'image/svg+xml' : 'image/png';
-    } else {
-      // Default fallback SVG SOAP emoji
-      link.href = "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧼</text></svg>";
-      link.type = 'image/svg+xml';
-    }
-  }, [config?.company?.favicon]);
+  }, [page, config.company.gaId]);
 
-  // Dynamic Page Title & SEO Meta Description Update Effect (including OpenGraph & JSON-LD Structured Data)
-  useEffect(() => {
-    const baseTitle = config?.company?.name || '美裝公寓大廈管理維護';
-    const tabTitles = {
-      home: `首頁 | ${baseTitle}`,
-      about: `關於我們 | ${baseTitle}`,
-      services: `服務項目 | ${baseTitle}`,
-      process: `清潔施工類型 | ${baseTitle}`,
-      credentials: `專業證照 | ${baseTitle}`,
-      contact: `聯絡我們 | ${baseTitle}`,
-      admin: `管理後台 | ${config?.company?.logoText || baseTitle}`
-    };
-
-    const pageTitle = tabTitles[activeTab] || baseTitle;
-    // Set page title
-    document.title = pageTitle;
-
-    // Set page meta description dynamically (except for admin portal)
-    if (activeTab !== 'admin') {
-      let metaDesc = document.querySelector("meta[name='description']");
-      if (!metaDesc) {
-        metaDesc = document.createElement('meta');
-        metaDesc.name = 'description';
-        document.getElementsByTagName('head')[0].appendChild(metaDesc);
-      }
-
-      const tabDescriptions = {
-        home: `美裝公寓大廈管理維護股份有限公司創立於 1979 年中日合資技術合作，引進日本東京美裝興業高標準 SOP，為大型工廠、商辦大樓、國際飯店與大型醫院提供極致品質與職業安全雙重合規的清潔維護服務。`,
-        about: `了解美裝公寓大廈管理維護股份有限公司的經營理念與發展沿革。我們引進日式精密工法與嚴格的員工安全教育培訓，提供頂級的清潔管理服務。`,
-        services: `探索我們提供的全方位清潔維護服務：大樓與大型工廠清潔、國際觀光飯店日常保養、企業商辦派駐清潔、醫療院所高規格消毒清潔。`,
-        process: `查看美裝的日式標準施工清潔作業流程。包含施工前會勘、安全防護準備、日式工法施作、領班雙重檢驗到完工驗收的完整 SOP。`,
-        credentials: `美裝公寓大廈管理維護是台北市清潔公會金質獎優良廠商，擁有齊全的甲種職業安全衛生主管、吊籠操作、勞安等各項專業證照及合規合法的公會會員資格。`,
-        contact: `歡迎填寫線上諮詢預約單進行免費現場會勘與估價。我們將派專人與您聯繫，提供量身規劃的大樓與廠辦清潔管理方案。`
-      };
-      const descContent = tabDescriptions[activeTab] || tabDescriptions.home;
-      metaDesc.content = descContent;
-
-      // --- Dynamic OpenGraph (OG) Meta Tags ---
-      const updateOgTag = (property, content) => {
-        let meta = document.querySelector(`meta[property='${property}']`);
-        if (!meta) {
-          meta = document.createElement('meta');
-          meta.setAttribute('property', property);
-          document.getElementsByTagName('head')[0].appendChild(meta);
-        }
-        meta.content = content;
-      };
-
-      updateOgTag('og:title', pageTitle);
-      updateOgTag('og:description', descContent);
-      updateOgTag('og:type', 'website');
-      updateOgTag('og:url', window.location.href);
-      updateOgTag('og:image', config?.company?.logoImage || (window.location.origin + '/favicon.svg'));
-
-      // --- Dynamic JSON-LD Structured Data for Local Business SEO ---
-      let jsonLdScript = document.getElementById('jsonld-local-business');
-      if (!jsonLdScript) {
-        jsonLdScript = document.createElement('script');
-        jsonLdScript.id = 'jsonld-local-business';
-        jsonLdScript.type = 'application/ld+json';
-        document.getElementsByTagName('head')[0].appendChild(jsonLdScript);
-      }
-
-      const schemaData = {
-        '@context': 'https://schema.org',
-        '@type': 'LocalBusiness',
-        'name': config?.company?.name || '美裝公寓大廈管理維護股份有限公司',
-        'image': config?.company?.logoImage || (window.location.origin + '/favicon.svg'),
-        'telephone': config?.company?.phone || '',
-        'email': config?.company?.email || '',
-        'address': {
-          '@type': 'PostalAddress',
-          'streetAddress': config?.company?.address || '',
-          'addressLocality': 'Taipei',
-          'addressCountry': 'TW'
-        },
-        'url': window.location.origin
-      };
-      jsonLdScript.text = JSON.stringify(schemaData);
-    }
-
-    // Trigger Google Analytics Page View when tab changes
-    const gaId = config?.company?.gaId;
-    if (window.gtag && gaId) {
-      window.gtag('config', gaId, {
-        page_path: window.location.pathname,
-        page_title: document.title
-      });
-    }
-  }, [activeTab, config]);
-
-  // Dynamic Google Tracking Integration (GA4 & Google Search Console Verification)
-  useEffect(() => {
-    const gaId = config?.company?.gaId;
-    const googleVerification = config?.company?.googleVerification;
-
-    // Handle Google Search Console Verification Meta Tag
-    let verificationMeta = document.querySelector("meta[name='google-site-verification']");
-    if (googleVerification) {
-      if (!verificationMeta) {
-        verificationMeta = document.createElement('meta');
-        verificationMeta.name = 'google-site-verification';
-        document.getElementsByTagName('head')[0].appendChild(verificationMeta);
-      }
-      verificationMeta.content = googleVerification;
-    } else if (verificationMeta) {
-      verificationMeta.remove();
-    }
-
-    // Handle Google Analytics 4 (GA4) Script Tags
-    const gaScriptId1 = 'google-analytics-gtag-loader';
-    const gaScriptId2 = 'google-analytics-gtag-init';
-
-    // Remove old tags if they exist
-    document.getElementById(gaScriptId1)?.remove();
-    document.getElementById(gaScriptId2)?.remove();
-
-    if (gaId) {
-      // Tag 1: External script loader
-      const script1 = document.createElement('script');
-      script1.id = gaScriptId1;
-      script1.async = true;
-      script1.src = `https://www.googletagmanager.com/gtag/js?id=${gaId}`;
-      document.head.appendChild(script1);
-
-      // Tag 2: Initialization script
-      const script2 = document.createElement('script');
-      script2.id = gaScriptId2;
-      script2.innerHTML = `
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', '${gaId}', { page_path: window.location.pathname });
-      `;
-      document.head.appendChild(script2);
-    }
-  }, [config?.company?.gaId, config?.company?.googleVerification]);
-
-  const handleSaveConfig = (newConfig) => {
-    setConfig(newConfig);
-    try {
-      localStorage.setItem('mizo_config', JSON.stringify(newConfig));
-    } catch (e) {
-      console.error('Failed to save config to localStorage', e);
-    }
+  const saveConfig = (next) => {
+    setAdminDraft(next);
+    setConfig({ ...next, seoAssets: initialConfig.seoAssets });
+    try { localStorage.setItem('mizo_config', JSON.stringify(next)); }
+    catch (error) { console.error('Failed to save local preview', error); }
+  };
+  const resetConfig = () => {
+    setConfig(initialConfig);
+    setAdminDraft(null);
+    try { localStorage.removeItem('mizo_config'); }
+    catch (error) { console.error('Failed to reset local preview', error); }
   };
 
-  const handleResetConfig = () => {
-    try {
-      localStorage.removeItem('mizo_config');
-      setConfig(initialConfig);
-    } catch (e) {
-      console.error('Failed to reset config in localStorage', e);
-    }
-  };
-
-  // Render correct subpage based on state router
-  const renderContent = () => {
-    switch (activeTab) {
-      case 'home':
-        return <Home homeData={config.home} companyInfo={config.company} servicesData={config.services} setActiveTab={setActiveTab} />;
-      case 'about':
-        return <About aboutData={config.about} />;
-      case 'services':
-        return <Services servicesData={config.services} />;
-      case 'process':
-        return <Process processData={config.process} />;
-      case 'credentials':
-        return <Credentials credentialsData={config.credentials} />;
-      case 'contact':
-        return <Contact companyInfo={config.company} contactData={config.contact} />;
-      case 'admin':
-        return (
-          <AdminEditor
-            configData={config}
-            onSave={handleSaveConfig}
-            onReset={handleResetConfig}
-            setActiveTab={setActiveTab}
-          />
-        );
-      default:
-        return <Home homeData={config.home} companyInfo={config.company} setActiveTab={setActiveTab} />;
+  const content = () => {
+    switch (page.id) {
+      case 'home': return <Home homeData={config.home} companyInfo={config.company} servicesData={config.services} />;
+      case 'about': return <About aboutData={config.about} />;
+      case 'services': return <Services servicesData={config.services} />;
+      case 'process': return <Process processData={config.process} />;
+      case 'credentials': return <Credentials credentialsData={config.credentials} />;
+      case 'contact': return <Contact companyInfo={config.company} contactData={config.contact} />;
+      case 'admin': return <Suspense fallback={<p className="container section-padding" role="status">正在載入管理後台…</p>}><AdminPage draft={adminDraft} onSave={saveConfig} onReset={resetConfig} setActiveTab={navigate} /></Suspense>;
+      default: return <section className="container section-padding"><h1>找不到這個頁面</h1><p>連結可能已變更，請回到首頁，或查看目前提供的清潔服務。</p><p className="not-found-links"><a href="/" className="btn btn-primary">返回首頁</a><a href="/services" className="btn btn-outline">查看清潔服務</a></p></section>;
     }
   };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      {/* Header Navigation */}
-      <Header activeTab={activeTab} setActiveTab={setActiveTab} companyInfo={config.company} />
-
-      {/* Main content router viewport */}
-      <main style={{ flexGrow: 1 }}>
-        {renderContent()}
+      <a className="skip-link" href="#main-content">跳至主要內容</a>
+      <Header activeTab={page.id} setActiveTab={navigate} companyInfo={config.company} />
+      <main id="main-content" style={{ flexGrow: 1 }}>
+        {!['home', 'admin', 'not-found'].includes(page.id) && <nav className="container breadcrumbs" aria-label="麵包屑"><ol><li><a href="/">首頁</a></li><li aria-current="page">{page.name}</li></ol></nav>}
+        {content()}
       </main>
-
-      {/* Footer Details */}
-      <Footer activeTab={activeTab} setActiveTab={setActiveTab} companyInfo={config.company} />
-
-      {/* Floating Widget Action Panel */}
+      <Footer activeTab={page.id} setActiveTab={navigate} companyInfo={config.company} />
       <FloatingWidget companyInfo={config.company} />
     </div>
   );

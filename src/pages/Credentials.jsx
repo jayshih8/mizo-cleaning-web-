@@ -1,4 +1,5 @@
 import React from 'react';
+import SiteImage from '../components/SiteImage';
 
 export default function Credentials({ credentialsData }) {
   return (
@@ -21,15 +22,15 @@ export default function Credentials({ credentialsData }) {
             <div key={index} className="cert-card">
               {/* Photo Area */}
               <div className="cert-img-wrap">
-                <img
-                  src={cert.image || 'images/association_cert.jpg'}
+                <SiteImage
+                  src={cert.image || '/images/association_cert.jpg'}
                   alt={cert.title}
                 />
               </div>
 
               {/* Text Area */}
               <div className="cert-info">
-                <h3>{cert.title}</h3>
+                <h2>{cert.title}</h2>
                 <p>{cert.description}</p>
               </div>
             </div>

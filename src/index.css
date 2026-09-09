@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Outfit:wght@300;400;600;700&display=swap');
 
 :root {
   /* Color Palette - Premium Corporate & Eco-Friendly */
@@ -14,8 +13,8 @@
   --bg-card: #ffffff;
   
   /* Fonts */
-  --font-sans: 'Noto Sans TC', sans-serif;
-  --font-display: 'Outfit', 'Noto Sans TC', sans-serif;
+  --font-sans: 'PingFang TC', 'Microsoft JhengHei', system-ui, sans-serif;
+  --font-display: 'PingFang TC', 'Microsoft JhengHei', system-ui, sans-serif;
   
   /* Transitions & Animation Duration */
   --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -850,7 +849,7 @@ h1, h2, h3, h4, h5, h6 {
   padding: 2rem;
 }
 
-.cert-info h3 {
+.cert-info h2 {
   font-size: 1.25rem;
   margin-bottom: 1rem;
   color: var(--primary-color);
@@ -1532,7 +1531,7 @@ textarea.form-control {
   left: 2rem;
 }
 
-.process-step-content h3 {
+.process-step-content h2 {
   font-size: 1.5rem;
   color: var(--primary-color);
   margin-bottom: 1rem;
@@ -1645,3 +1644,21 @@ textarea.form-control {
 
 
 
+/* Crawlable navigation and accessible document structure. */
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.skip-link { position: fixed; left: 1rem; top: -6rem; z-index: 9999; padding: 0.75rem 1rem; background: white; color: var(--primary-color); border: 2px solid currentColor; }
+.skip-link:focus { top: 1rem; }
+.breadcrumbs { padding-top: 1.5rem; font-size: 0.875rem; color: var(--text-muted); }
+.breadcrumbs ol { display: flex; gap: 0.65rem; list-style: none; padding: 0; margin: 0; }
+.breadcrumbs li + li::before { content: '/'; margin-right: 0.65rem; color: #64748b; }
+.breadcrumbs a { text-decoration: underline; text-underline-offset: 0.2em; }
+.service-section { scroll-margin-top: 110px; margin-bottom: 2.5rem; }
+.service-tabs-nav a { text-decoration: none; }
+.process-step-card { scroll-margin-top: 110px; }
+.not-found-links { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 2rem; }
+:focus-visible { outline: 3px solid var(--secondary-color); outline-offset: 4px; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-delay: 0ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
+
+.footer-bottom { color: #cbd5e1; }

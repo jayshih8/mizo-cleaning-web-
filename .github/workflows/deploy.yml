@@ -9,7 +9,12 @@ on:
       - 'public/**'
       - 'index.html'
       - 'package.json'
+      - 'package-lock.json'
       - 'vite.config.js'
+      - 'vite-multi-image-plugin.js'
+      - 'scripts/**'
+      - 'tests/**'
+      - '.github/workflows/deploy.yml'
 
   # 允許手動觸發
   workflow_dispatch:
@@ -27,7 +32,7 @@ jobs:
       - name: 設定 Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
 
       - name: 安裝依賴套件
@@ -36,9 +41,15 @@ jobs:
       - name: 建置網站
         run: npm run build
 
+      - name: 驗證 SEO 規則
+        run: npm test
+
+      - name: 建立舊網址轉址
+        run: node scripts/build-legacy-redirects.mjs
+
       - name: 部署到 GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+          publish_dir: ./legacy-pages
           publish_branch: gh-pages

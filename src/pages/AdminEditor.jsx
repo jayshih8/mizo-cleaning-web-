@@ -302,11 +302,11 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
 
   const getServiceDefaultImage = (id) => {
     switch (id) {
-      case 'building-factory': return 'images/banner_building.png';
-      case 'hotel-cleaning': return 'images/hotel.jpg';
-      case 'office-cleaning': return 'images/history.jpg';
-      case 'hospital-cleaning': return 'images/training.jpg';
-      default: return 'images/banner_building.png';
+      case 'building-factory': return '/images/banner_building.png';
+      case 'hotel-cleaning': return '/images/hotel.jpg';
+      case 'office-cleaning': return '/images/history.jpg';
+      case 'hospital-cleaning': return '/images/training.jpg';
+      default: return '/images/banner_building.png';
     }
   };
 

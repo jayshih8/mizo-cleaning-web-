@@ -4,12 +4,14 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
+    "dev": "node scripts/prepare-content.mjs && vite",
+    "build": "node scripts/prepare-content.mjs && vite build && vite build --ssr src/entry-server.jsx --outDir .ssr && node scripts/prerender.mjs && node scripts/check-seo.mjs",
     "lint": "oxlint",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist",
+    "test": "node --test tests/*.test.mjs",
+    "check:seo": "node scripts/check-seo.mjs"
   },
   "dependencies": {
     "jimp": "^1.6.1",
@@ -23,6 +25,7 @@
     "@vitejs/plugin-react": "^6.0.2",
     "gh-pages": "^6.3.0",
     "oxlint": "^1.69.0",
+    "sharp": "^0.35.4",
     "vite": "^8.1.0"
   }
 }

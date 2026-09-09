@@ -111,7 +111,7 @@ export default function Contact({ companyInfo, contactData }) {
                 <p style={{ fontSize: '1.25rem', fontWeight: '700', color: 'var(--primary-color)', margin: '0.25rem 0' }}>
                   {companyInfo.phoneFormatted || companyInfo.phone}
                 </p>
-                <a href={`tel:${companyInfo.phone}`}>點擊直接撥打</a>
+                <a href={`tel:${(companyInfo.phoneFormatted || companyInfo.phone).replace(/[^+\d]/g, '')}`}>點擊直接撥打</a>
               </div>
             </div>
 
@@ -144,6 +144,7 @@ export default function Contact({ companyInfo, contactData }) {
               <div className="contact-card-info">
                 <h3>總公司地址</h3>
                 <p style={{ margin: '0.25rem 0', fontSize: '0.9rem' }}>{companyInfo.address}</p>
+                <p>公司總機：<a href={`tel:${companyInfo.phone}`}>{companyInfo.phone}</a></p>
               </div>
             </div>
 

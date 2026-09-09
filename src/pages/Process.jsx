@@ -1,4 +1,5 @@
 import React from 'react';
+import SiteImage from '../components/SiteImage';
 
 export default function Process({ processData }) {
   if (!processData) return null;
@@ -18,14 +19,14 @@ export default function Process({ processData }) {
         <div className="process-list">
           {processData.steps &&
             processData.steps.map((step, index) => (
-              <div key={index} className="process-step-card">
+              <div key={index} id={`type-${index + 1}`} className="process-step-card">
                 {/* Image Section */}
                 <div className="process-step-image">
-                  <img
+                  <SiteImage
                     src={step.image}
                     alt={step.title}
                     onError={(e) => {
-                      e.target.src = 'images/banner_building.png'; // Fallback if image load fails
+                      e.target.src = '/images/banner_building.png'; // Fallback if image load fails
                     }}
                   />
                 </div>
@@ -33,7 +34,7 @@ export default function Process({ processData }) {
                 {/* Content Section */}
                 <div className="process-step-content">
                   <span className="process-step-number">{step.stepNumber || `0${index + 1}`}</span>
-                  <h3>{step.title}</h3>
+                  <h2>{step.title}</h2>
                   <p>{step.description}</p>
                 </div>
               </div>

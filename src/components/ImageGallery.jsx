@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import SiteImage from './SiteImage';
 import { ChevronLeft, ChevronRight, Expand, X } from 'lucide-react';
 import './ImageGallery.css';
 
@@ -14,11 +15,12 @@ const normalizeSources = (images, fallback) => {
 
 export default function ImageGallery({
   images,
-  fallback = 'images/banner_building.png',
+  fallback = '/images/banner_building.png',
   alt = '圖片',
   className = '',
   style,
   enableLightbox = true,
+  sizes = '(max-width: 640px) 100vw, 600px',
 }) {
   const sources = useMemo(() => normalizeSources(images, fallback), [images, fallback]);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -60,6 +62,7 @@ export default function ImageGallery({
   const applyFallback = (event) => {
     if (!fallback || event.currentTarget.dataset.fallbackApplied === 'true') return;
     event.currentTarget.dataset.fallbackApplied = 'true';
+    event.currentTarget.removeAttribute('srcset');
     event.currentTarget.src = fallback;
   };
 
@@ -78,10 +81,11 @@ export default function ImageGallery({
           onClick={() => enableLightbox && setIsLightboxOpen(true)}
           aria-label={enableLightbox ? `放大查看：${alt}` : alt}
         >
-          <img
+          <SiteImage
             src={currentSource}
             alt={`${alt}${sources.length > 1 ? `（${activeIndex + 1}/${sources.length}）` : ''}`}
             className="multi-image-gallery-image"
+            sizes={sizes}
             loading="lazy"
             onError={applyFallback}
           />
@@ -142,7 +146,7 @@ export default function ImageGallery({
           )}
 
           <div className="multi-image-lightbox-content" onClick={(event) => event.stopPropagation()}>
-            <img src={currentSource} alt={alt} onError={applyFallback} />
+            <SiteImage src={currentSource} alt={alt} sizes="100vw" loading="eager" onError={applyFallback} />
             {sources.length > 1 && (
               <span className="multi-image-lightbox-count">
                 {activeIndex + 1} / {sources.length}

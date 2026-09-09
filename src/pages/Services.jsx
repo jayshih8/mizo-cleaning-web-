@@ -1,42 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import SiteImage from '../components/SiteImage';
 import { CheckCircle2 } from 'lucide-react';
 
 export default function Services({ servicesData }) {
-  const [activeServiceId, setActiveServiceId] = useState(servicesData.items[0]?.id || '');
-
-  useEffect(() => {
-    const scrollToId = sessionStorage.getItem('mizo_scroll_to_service');
-    if (scrollToId) {
-      sessionStorage.removeItem('mizo_scroll_to_service');
-      const exists = servicesData.items.some(item => item.id === scrollToId);
-      if (exists) {
-        setActiveServiceId(scrollToId);
-        setTimeout(() => {
-          const element = document.querySelector('.service-tabs-nav');
-          if (element) {
-            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          }
-        }, 150);
-      }
-    }
-  }, [servicesData]);
-
-  const activeService = servicesData.items.find(item => item.id === activeServiceId) || servicesData.items[0];
-
   const featuredIds = servicesData.featuredServiceIds || (servicesData.featuredServiceId ? [servicesData.featuredServiceId] : ['hotel-cleaning']);
   const featuredServices = servicesData.items.filter(item => featuredIds.includes(item.id));
-  const displayFeatured = featuredServices.length > 0 ? featuredServices : [servicesData.items[0]];
+  const displayFeatured = featuredServices.length > 0 ? featuredServices : servicesData.items.slice(0, 1);
 
   // Helper to determine service image
   const getServiceImage = (service) => {
-    if (!service) return 'images/banner_building.png';
+    if (!service) return '/images/banner_building.png';
     if (service.image) return service.image;
     switch (service.id) {
-      case 'building-factory': return 'images/banner_building.png';
-      case 'hotel-cleaning': return 'images/hotel.jpg';
-      case 'office-cleaning': return 'images/history.jpg';
-      case 'hospital-cleaning': return 'images/training.jpg';
-      default: return 'images/banner_building.png';
+      case 'building-factory': return '/images/banner_building.png';
+      case 'hotel-cleaning': return '/images/hotel.jpg';
+      case 'office-cleaning': return '/images/history.jpg';
+      case 'hospital-cleaning': return '/images/training.jpg';
+      default: return '/images/banner_building.png';
     }
   };
 
@@ -51,29 +31,31 @@ export default function Services({ servicesData }) {
         </div>
 
         {/* Services Tab Nav */}
-        <div className="service-tabs-nav">
+        <nav className="service-tabs-nav" aria-label="清潔服務分類">
           {servicesData.items && servicesData.items.map((item) => (
-            <button
+            <a
               key={item.id}
-              onClick={() => setActiveServiceId(item.id)}
-              className={`service-tab-btn ${activeServiceId === item.id || (activeServiceId === '' && servicesData.items[0]?.id === item.id) ? 'active' : ''}`}
+              href={`#${item.id}`}
+              className="service-tab-btn"
             >
               {item.title}
-            </button>
+            </a>
           ))}
-        </div>
+        </nav>
 
-        {/* Service Display Card */}
-        {activeService && (
-          <div className="service-display-card animate-fade-in">
+        {/* Every service is readable without requiring a click or JavaScript. */}
+        {servicesData.items.map((activeService, serviceIndex) => (
+          <section key={activeService.id} id={activeService.id} className="service-display-card animate-fade-in service-section">
             <div className="grid-2" style={{ gap: 0, minHeight: '480px' }}>
               {/* Image Side */}
-              <div
+              <SiteImage
                 className="service-image-side"
-                style={{
-                  backgroundImage: `url(${getServiceImage(activeService)})`,
-                  minHeight: '300px'
-                }}
+                src={getServiceImage(activeService)}
+                alt={activeService.title}
+                width="800" height="600"
+                loading={serviceIndex === 0 ? 'eager' : 'lazy'}
+                decoding="async"
+                style={{ width: '100%', height: '100%', minHeight: '300px', objectFit: 'cover' }}
               />
 
               {/* Text / Info Side */}
@@ -81,9 +63,9 @@ export default function Services({ servicesData }) {
                 <h2>{activeService.title}</h2>
                 <p className="service-desc">{activeService.description}</p>
                 
-                <h4 style={{ fontSize: '1rem', color: 'var(--primary-color)', marginBottom: '1rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                <h3 style={{ fontSize: '1rem', color: 'var(--primary-color)', marginBottom: '1rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
                   主要服務要點
-                </h4>
+                </h3>
                 <ul className="service-features-list">
                   {activeService.features && activeService.features.map((feat, index) => (
                     <li key={index}>
@@ -92,10 +74,11 @@ export default function Services({ servicesData }) {
                     </li>
                   ))}
                 </ul>
+                <a href="/contact" className="btn btn-outline">洽詢此項清潔服務</a>
               </div>
             </div>
-          </div>
-        )}
+          </section>
+        ))}
 
 
       </div>
@@ -129,7 +112,8 @@ export default function Services({ servicesData }) {
                   </ul>
                 </div>
                 <div style={{ borderRadius: 'var(--radius-md)', overflow: 'hidden', boxShadow: 'var(--shadow-md)', height: '280px' }}>
-                  <img
+                  <SiteImage
+                    loading="lazy" decoding="async" width="800" height="560"
                     src={getServiceImage(featuredService)}
                     alt={featuredService.title}
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}

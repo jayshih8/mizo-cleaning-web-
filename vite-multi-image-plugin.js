@@ -104,15 +104,16 @@ const transformHome = (source) => {
 
   code = replaceBetween(
     code,
-    `                  <img
-                    src={project.image || 'images/banner_building.png'}
+    `                  <SiteImage
+                    src={project.image || '/images/banner_building.png'}
                     alt={project.title || ('核心工程實績 ' + (index + 1))}`,
     `                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(11,28,61,0.04) 35%, rgba(11,28,61,0.78) 100%)' }} />`,
     `                  <ImageGallery
                     images={project.images}
-                    fallback={project.image || 'images/banner_building.png'}
+                    fallback={project.image || '/images/banner_building.png'}
                     alt={project.title || ('核心工程實績 ' + (index + 1))}
                     className="core-project-image-gallery"
+                    sizes="(max-width: 768px) 45vw, 280px"
                     style={{ position: 'absolute', inset: 0 }}
                   />
 `,
@@ -138,7 +139,7 @@ const transformProcess = (source) => {
 
   return replaceBetween(
     code,
-    `                  <img
+    `                  <SiteImage
                     src={step.image}
                     alt={step.title}`,
     `                </div>
@@ -146,7 +147,7 @@ const transformProcess = (source) => {
                 {/* Content Section */}`,
     `                  <ImageGallery
                     images={step.images}
-                    fallback={step.image || 'images/banner_building.png'}
+                    fallback={step.image || '/images/banner_building.png'}
                     alt={step.title || ('施工步驟 ' + (index + 1))}
                     className="process-step-gallery"
                   />
@@ -160,6 +161,7 @@ export default function multiImageGalleryPlugin() {
     name: 'mizo-multi-image-gallery',
     enforce: 'pre',
     transform(source, id) {
+      source = source.replace(/\r\n/g, '\n')
       const normalizedId = id.replace(/\\/g, '/')
       if (normalizedId.endsWith('/src/pages/AdminEditor.jsx')) {
         return { code: transformAdminEditor(source), map: null }

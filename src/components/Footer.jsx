@@ -1,4 +1,5 @@
 import React from 'react';
+import SiteImage from './SiteImage';
 import { Phone, Mail, MapPin, Printer, Clock } from 'lucide-react';
 
 export default function Footer({ activeTab, setActiveTab, companyInfo }) {
@@ -17,7 +18,7 @@ export default function Footer({ activeTab, setActiveTab, companyInfo }) {
           <div className="footer-brand">
             <h2 className="logo" style={{ color: 'white', marginBottom: '1rem' }}>
               {companyInfo.logoImage ? (
-                <img src={companyInfo.logoImage} alt="Logo" className="logo-img-custom" style={{ height: '42px', width: 'auto', objectFit: 'contain' }} />
+                <SiteImage src={companyInfo.logoImage} alt={companyInfo.name} className="logo-img-custom" style={{ height: '42px', width: 'auto', objectFit: 'contain' }} />
               ) : (
                 <div className="logo-icon-wrap" style={{ boxShadow: 'none' }}>{companyInfo.logoIconText || 'TB'}</div>
               )}
@@ -40,6 +41,7 @@ export default function Footer({ activeTab, setActiveTab, companyInfo }) {
               <li className="footer-link-item">
                 <a href="/services" onClick={(e) => { e.preventDefault(); handleLinkClick('services'); }}>服務項目</a>
               </li>
+              <li className="footer-link-item"><a href="/process">清潔施工類型</a></li>
               <li className="footer-link-item">
                 <a href="/credentials" onClick={(e) => { e.preventDefault(); handleLinkClick('credentials'); }}>專業證照</a>
               </li>
@@ -79,14 +81,14 @@ export default function Footer({ activeTab, setActiveTab, companyInfo }) {
         <div className="footer-bottom">
           <p>© {new Date().getFullYear()} {companyInfo.name || '美裝公寓大廈管理維護股份有限公司'} All rights reserved.</p>
           <div className="footer-designer" style={{ opacity: 0.8, fontSize: '0.825rem' }}>
-            <span style={{ color: '#64748b' }}>網頁設計：</span>
+            <span style={{ color: '#cbd5e1' }}>網頁設計：</span>
             <a 
               href="https://www.facebook.com/YungChangShih" 
               target="_blank" 
               rel="noopener noreferrer"
               className="designer-link"
               style={{ 
-                color: '#64748b', 
+                color: '#cbd5e1',
                 textDecoration: 'none', 
                 fontWeight: 500,
                 transition: 'color 0.2s ease, text-decoration 0.2s ease'
@@ -96,7 +98,7 @@ export default function Footer({ activeTab, setActiveTab, companyInfo }) {
                 e.target.style.textDecoration = 'underline';
               }}
               onMouseLeave={(e) => {
-                e.target.style.color = '#64748b';
+                e.target.style.color = '#cbd5e1';
                 e.target.style.textDecoration = 'none';
               }}
             >

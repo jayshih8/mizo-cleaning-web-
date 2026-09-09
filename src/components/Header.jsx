@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import SiteImage from './SiteImage';
 import { Menu, X, PhoneCall } from 'lucide-react';
 
 export default function Header({ activeTab, setActiveTab, companyInfo }) {
@@ -26,9 +27,9 @@ export default function Header({ activeTab, setActiveTab, companyInfo }) {
     <header className="header-wrapper">
       <div className="container">
         <nav className="navbar">
-          <a href="/" className="logo" onClick={(e) => { e.preventDefault(); handleNavClick('home'); }}>
+          <a href="/" className="logo" onClick={(e) => { if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return; e.preventDefault(); handleNavClick('home'); }}>
             {companyInfo.logoImage ? (
-              <img src={companyInfo.logoImage} alt="Logo" className="logo-img-custom" style={{ height: '42px', width: 'auto', objectFit: 'contain' }} />
+              <SiteImage loading="eager" sizes="42px" src={companyInfo.logoImage} alt={companyInfo.name} className="logo-img-custom" style={{ height: '42px', width: 'auto', objectFit: 'contain' }} />
             ) : (
               <div className="logo-icon-wrap">{companyInfo.logoIconText || 'TB'}</div>
             )}
@@ -41,9 +42,10 @@ export default function Header({ activeTab, setActiveTab, companyInfo }) {
               <li key={item.id}>
                 <a
                   href={item.id === 'home' ? '/' : `/${item.id}`}
+                  aria-current={activeTab === item.id ? 'page' : undefined}
                   className={`nav-link ${activeTab === item.id ? 'active' : ''}`}
                   onClick={(e) => {
-                    e.preventDefault();
+                    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return; e.preventDefault();
                     handleNavClick(item.id);
                   }}
                 >
@@ -54,7 +56,7 @@ export default function Header({ activeTab, setActiveTab, companyInfo }) {
 
           </ul>
 
-          <a href={`tel:${companyInfo.phone}`} className="nav-phone">
+          <a href={`tel:${(companyInfo.phoneFormatted || companyInfo.phone).replace(/[^+\d]/g, '')}`} className="nav-phone">
             <PhoneCall size={18} />
             <span>{companyInfo.phoneFormatted || companyInfo.phone}</span>
           </a>
@@ -73,7 +75,7 @@ export default function Header({ activeTab, setActiveTab, companyInfo }) {
               href={item.id === 'home' ? '/' : `/${item.id}`}
               className={`nav-link ${activeTab === item.id ? 'active' : ''}`}
               onClick={(e) => {
-                e.preventDefault();
+                if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return; e.preventDefault();
                 handleNavClick(item.id);
               }}
             >
