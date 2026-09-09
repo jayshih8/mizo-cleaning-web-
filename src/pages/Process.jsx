@@ -8,7 +8,7 @@ export default function Process({ processData }) {
       <div className="container">
         {/* Page Title */}
         <div className="section-title-container text-center">
-          <h1 className="section-title">{processData.title || '施工/清潔服務過程'}</h1>
+          <h1 className="section-title">{processData.title || '清潔施工類型'}</h1>
           <p className="section-subtitle">
             {processData.subtitle || '日式精工 SOP：從防護到完工，每一步驟皆代表我們對品質的極致追求'}
           </p>

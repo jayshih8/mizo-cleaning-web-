@@ -82,7 +82,7 @@ const transformAdminEditor = (source) => {
                         images={getGalleryImages(step)}
                         onChange={(images) => handleGalleryChange(['process', 'steps', index], images)}
                         onStatus={showToast}
-                        emptyText="點擊或拖曳，一次選擇此步驟的多張現場照片"
+                        emptyText="點擊或拖曳，一次選擇此類型的多張現場照片"
                         helpText="可一次上傳 6 張以上；第一張為封面，可排序或刪除，最多 30 張。"
                       />
                     </div>

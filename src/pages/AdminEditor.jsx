@@ -739,7 +739,7 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
               className={`admin-nav-btn ${activeSubTab === 'process' ? 'active' : ''}`}
             >
               <FileText size={16} />
-              <span>施工過程管理</span>
+              <span>清潔施工類型管理</span>
             </button>
             <button
               onClick={() => setActiveSubTab('credentials')}
@@ -1798,9 +1798,9 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
             {/* SUBTAB 4.5: PROCESS TIMELINE */}
             {activeSubTab === 'process' && (
               <div>
-                <h2 className="admin-section-title">施工/清潔服務過程管理</h2>
+                <h2 className="admin-section-title">清潔施工類型管理</h2>
                 <div className="form-group">
-                  <label>施工過程頁大標題</label>
+                  <label>清潔施工類型頁大標題</label>
                   <input
                     type="text"
                     className="form-control"
@@ -1811,7 +1811,7 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
                   />
                 </div>
                 <div className="form-group">
-                  <label>施工過程頁副標題</label>
+                  <label>清潔施工類型頁副標題</label>
                   <input
                     type="text"
                     className="form-control"
@@ -1824,7 +1824,7 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
 
                 <div style={{ marginTop: '2.5rem', marginBottom: '1rem' }}>
                   <h3 style={{ fontSize: '1.15rem', color: 'var(--primary-color)', margin: 0 }}>
-                    清潔施工作業步驟 (SOP Steps)
+                    清潔施工類型
                   </h3>
                 </div>
 
@@ -1832,11 +1832,11 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
                   <div key={index} className="admin-list-item">
                     <div className="admin-list-item-header">
                       <span className="admin-badge" style={{ backgroundColor: 'var(--secondary-color)' }}>
-                        步驟 {step.stepNumber || `0${index + 1}`}
+                        類型 {step.stepNumber || `0${index + 1}`}
                       </span>
                     </div>
                     <div className="form-group">
-                      <label>步驟標題</label>
+                      <label>類型標題</label>
                       <input
                         type="text"
                         className="form-control"
@@ -1849,7 +1849,7 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
                       />
                     </div>
                     <div className="form-group">
-                      <label>步驟詳細描述</label>
+                      <label>類型詳細描述</label>
                       <textarea
                         className="form-control"
                         style={{ minHeight: '70px' }}
@@ -1867,7 +1867,7 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
                       <label>施工現場照片 (點擊上傳圖片，自動轉 Base64)</label>
                       <div className="image-upload-zone" onClick={() => document.getElementById(`stepUpload-${index}`).click()}>
                         <Info size={24} style={{ color: 'var(--text-muted)' }} />
-                        <span>點擊上傳照片以替換此步驟的現場相片</span>
+                        <span>點擊上傳照片以替換此類型的現場相片</span>
                         <input
                           type="file"
                           id={`stepUpload-${index}`}

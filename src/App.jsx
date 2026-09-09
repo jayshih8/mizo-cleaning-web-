@@ -121,7 +121,7 @@ export default function App() {
       home: `首頁 | ${baseTitle}`,
       about: `關於我們 | ${baseTitle}`,
       services: `服務項目 | ${baseTitle}`,
-      process: `施工過程 | ${baseTitle}`,
+      process: `清潔施工類型 | ${baseTitle}`,
       credentials: `專業證照 | ${baseTitle}`,
       contact: `聯絡我們 | ${baseTitle}`,
       admin: `管理後台 | ${config?.company?.logoText || baseTitle}`
