@@ -38,35 +38,6 @@ export default function About({ aboutData }) {
           </div>
         </div>
 
-        {/* Company Cleaning Service Types */}
-        {aboutData.serviceTypes?.items?.length > 0 && (
-          <section className="company-service-types-section" aria-labelledby="company-service-types-title">
-            <div className="section-title-container" style={{ marginBottom: '3rem' }}>
-              <h2 id="company-service-types-title" className="section-title" style={{ fontSize: '1.75rem' }}>
-                {aboutData.serviceTypes.title || '公司服務類型（清潔）'}
-              </h2>
-              <p className="section-subtitle">{aboutData.serviceTypes.subtitle}</p>
-            </div>
-
-            <div className="company-service-types-grid">
-              {aboutData.serviceTypes.items.map((item, index) => (
-                <article key={item.id || `${item.title}-${index}`} className="company-service-type-card">
-                  <span className="company-service-type-number" aria-hidden="true">
-                    {String(index + 1).padStart(2, '0')}
-                  </span>
-                  <h3>{item.title}</h3>
-                  <p>{item.description}</p>
-                  <a href={item.id ? `/services#${item.id}` : '/services'}>查看服務內容</a>
-                </article>
-              ))}
-            </div>
-
-            <div className="company-service-types-action">
-              <a href="/services" className="btn btn-outline">查看完整服務項目</a>
-            </div>
-          </section>
-        )}
-
         {/* Employee Training Block (Image 1 mapping) */}
         <div>
           <div className="section-title-container" style={{ marginBottom: '3.5rem' }}>

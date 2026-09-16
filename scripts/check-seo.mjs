@@ -44,15 +44,6 @@ for (const service of config.services.items) {
   assert(files.get('/services').includes(service.title));
   assert(files.get('/services').includes(service.description));
 }
-const aboutHtml = files.get('/about');
-assert(aboutHtml.includes(config.about.serviceTypes.title));
-const serviceTypesSectionIndex = aboutHtml.indexOf('id="company-service-types-title"');
-const trainingHeadingIndex = aboutHtml.indexOf(`>${config.about.training.title}</h2>`);
-assert(serviceTypesSectionIndex >= 0 && serviceTypesSectionIndex < trainingHeadingIndex);
-for (const serviceType of config.about.serviceTypes.items) {
-  assert(aboutHtml.includes(serviceType.title));
-  assert(aboutHtml.includes(serviceType.description));
-}
 for (const page of ['admin-portal', '404']) {
   const html = await fs.readFile(`dist/${page}.html`, 'utf8');
   assert(html.includes('content="noindex, nofollow"'));
