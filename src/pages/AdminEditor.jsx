@@ -5,6 +5,20 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
   const [localData, setLocalData] = useState(() => {
     const cloned = JSON.parse(JSON.stringify(configData));
     cloned.home ||= {};
+    cloned.about ||= {};
+    const defaultServiceTypes = (cloned.services?.items || []).map((item) => ({
+      id: item.id,
+      title: item.title,
+      description: item.description,
+    }));
+    cloned.about.serviceTypes ||= {
+      title: '公司服務類型（清潔）',
+      subtitle: '依照不同場域需求，提供專業、穩定且符合安全規範的清潔維護服務',
+      items: defaultServiceTypes,
+    };
+    cloned.about.serviceTypes.items = Array.isArray(cloned.about.serviceTypes.items)
+      ? cloned.about.serviceTypes.items
+      : defaultServiceTypes;
     const normalizedCases = Array.isArray(cloned.home.cases) ? cloned.home.cases : [];
     while (normalizedCases.length < 4) {
       normalizedCases.push({ title: '工程實績 ' + (normalizedCases.length + 1), category: '專業清潔維護', description: '請在後台更新此格工程實績說明。', image: '' });
@@ -374,6 +388,40 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
       }));
       showToast('已刪除歷史沿革！');
     }
+  };
+
+  const handleAddCompanyServiceType = () => {
+    const newItem = {
+      id: `company-service-${Date.now()}`,
+      title: '新增清潔服務類型',
+      description: '請輸入此清潔服務類型的適用場域與服務內容。',
+    };
+    setLocalData((previous) => ({
+      ...previous,
+      about: {
+        ...previous.about,
+        serviceTypes: {
+          ...previous.about.serviceTypes,
+          items: [...previous.about.serviceTypes.items, newItem],
+        },
+      },
+    }));
+    showToast('已新增一個公司清潔服務類型！');
+  };
+
+  const handleDeleteCompanyServiceType = (index) => {
+    if (!window.confirm('確定要刪除此公司清潔服務類型嗎？')) return;
+    setLocalData((previous) => ({
+      ...previous,
+      about: {
+        ...previous.about,
+        serviceTypes: {
+          ...previous.about.serviceTypes,
+          items: previous.about.serviceTypes.items.filter((_, itemIndex) => itemIndex !== index),
+        },
+      },
+    }));
+    showToast('已刪除公司清潔服務類型！');
   };
 
   const handleAddCert = () => {
@@ -1430,6 +1478,122 @@ export default function AdminEditor({ configData, onSave, onReset, setActiveTab 
                       </div>
                     </div>
                   ))}
+                </div>
+
+                <div style={{ marginTop: '2.5rem', paddingTop: '2rem', borderTop: '1px solid #e2e8f0' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
+                    <div>
+                      <h3 style={{ fontSize: '1.15rem', color: 'var(--primary-color)', margin: '0 0 0.35rem' }}>
+                        公司服務類型（清潔）
+                      </h3>
+                      <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', margin: 0 }}>
+                        此區塊顯示於前台「關於我們」頁，位置在員工教育訓練之前。
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleAddCompanyServiceType}
+                      className="btn btn-secondary"
+                      style={{ padding: '0.4rem 1rem', fontSize: '0.85rem', display: 'flex', gap: '0.25rem', alignItems: 'center' }}
+                    >
+                      <Plus size={14} />
+                      <span>新增服務類型</span>
+                    </button>
+                  </div>
+
+                  <div className="admin-grid">
+                    <div className="form-group">
+                      <label>區塊大標題</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={localData.about.serviceTypes.title || ''}
+                        onChange={(event) => setLocalData((previous) => ({
+                          ...previous,
+                          about: {
+                            ...previous.about,
+                            serviceTypes: { ...previous.about.serviceTypes, title: event.target.value },
+                          },
+                        }))}
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>區塊副標題</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={localData.about.serviceTypes.subtitle || ''}
+                        onChange={(event) => setLocalData((previous) => ({
+                          ...previous,
+                          about: {
+                            ...previous.about,
+                            serviceTypes: { ...previous.about.serviceTypes, subtitle: event.target.value },
+                          },
+                        }))}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    {localData.about.serviceTypes.items.map((item, index) => (
+                      <div key={item.id || index} className="admin-list-item">
+                        <div className="admin-list-item-header">
+                          <span className="admin-badge" style={{ backgroundColor: 'var(--secondary-color)' }}>
+                            服務類型 {String(index + 1).padStart(2, '0')}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteCompanyServiceType(index)}
+                            className="btn btn-outline"
+                            style={{ borderColor: '#ef4444', color: '#ef4444', padding: '0.25rem 0.5rem', fontSize: '0.8rem', display: 'flex', gap: '0.25rem', alignItems: 'center' }}
+                          >
+                            <Trash size={12} />
+                            <span>刪除類型</span>
+                          </button>
+                        </div>
+                        <div className="form-group">
+                          <label>服務類型名稱</label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            value={item.title || ''}
+                            onChange={(event) => setLocalData((previous) => ({
+                              ...previous,
+                              about: {
+                                ...previous.about,
+                                serviceTypes: {
+                                  ...previous.about.serviceTypes,
+                                  items: previous.about.serviceTypes.items.map((current, itemIndex) => (
+                                    itemIndex === index ? { ...current, title: event.target.value } : current
+                                  )),
+                                },
+                              },
+                            }))}
+                          />
+                        </div>
+                        <div className="form-group" style={{ marginBottom: 0 }}>
+                          <label>服務類型說明</label>
+                          <textarea
+                            className="form-control"
+                            style={{ minHeight: '70px' }}
+                            value={item.description || ''}
+                            onChange={(event) => setLocalData((previous) => ({
+                              ...previous,
+                              about: {
+                                ...previous.about,
+                                serviceTypes: {
+                                  ...previous.about.serviceTypes,
+                                  items: previous.about.serviceTypes.items.map((current, itemIndex) => (
+                                    itemIndex === index ? { ...current, description: event.target.value } : current
+                                  )),
+                                },
+                              },
+                            }))}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
                 <h3 style={{ fontSize: '1.15rem', marginTop: '2.5rem', marginBottom: '1rem', color: 'var(--primary-color)' }}>
