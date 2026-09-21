@@ -1,6 +1,9 @@
 import React from 'react';
 
 export default function About({ aboutData }) {
+  const serviceTypes = aboutData.serviceTypes;
+  const serviceItems = Array.isArray(serviceTypes?.items) ? serviceTypes.items : [];
+
   return (
     <div className="section-padding animate-fade-in">
       <div className="container">
@@ -38,7 +41,32 @@ export default function About({ aboutData }) {
           </div>
         </div>
 
-        {/* Employee Training Block (Image 1 mapping) */}
+        {serviceItems.length > 0 && (
+          <section className="company-service-types-section" aria-labelledby="company-service-types-title">
+            <div className="section-title-container">
+              <h2 id="company-service-types-title" className="section-title">
+                {serviceTypes.title || '公司服務類型（清潔）'}
+              </h2>
+              {serviceTypes.subtitle && <p className="section-subtitle">{serviceTypes.subtitle}</p>}
+            </div>
+            <div className="company-service-types-grid">
+              {serviceItems.map((item, index) => (
+                <article key={item.id || index} className="company-service-type-card">
+                  <span className="company-service-type-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+                  <div>
+                    <h3>{item.title}</h3>
+                    <p>{item.description}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+            <div className="company-service-types-action">
+              <a href="/services" className="btn btn-outline">查看完整服務項目</a>
+            </div>
+          </section>
+        )}
+
+        {/* Employee Training */}
         <div>
           <div className="section-title-container" style={{ marginBottom: '3.5rem' }}>
             <h2 className="section-title" style={{ fontSize: '1.75rem' }}>{aboutData.training.title}</h2>

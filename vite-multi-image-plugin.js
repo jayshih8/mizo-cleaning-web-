@@ -83,7 +83,7 @@ const transformAdminEditor = (source) => {
                         onChange={(images) => handleGalleryChange(['process', 'steps', index], images)}
                         onStatus={showToast}
                         emptyText="點擊或拖曳，一次選擇此類型的多張現場照片"
-                        helpText="可一次上傳 6 張以上；第一張為封面，可排序或刪除，最多 30 張。"
+                        helpText="前台以組圖顯示所有照片，點擊可放大。可調整順序或刪除，最多 30 張。"
                       />
                     </div>
 `,
@@ -131,31 +131,6 @@ const transformHome = (source) => {
   )
 }
 
-const transformProcess = (source) => {
-  let code = source.replace(
-    "import React from 'react';\n",
-    "import React from 'react';\nimport ImageGallery from '../components/ImageGallery';\n",
-  )
-
-  return replaceBetween(
-    code,
-    `                  <SiteImage
-                    src={step.image}
-                    alt={step.title}`,
-    `                </div>
-
-                {/* Content Section */}`,
-    `                  <ImageGallery
-                    images={step.images}
-                    fallback={step.image || '/images/banner_building.png'}
-                    alt={step.title || ('施工步驟 ' + (index + 1))}
-                    className="process-step-gallery"
-                  />
-`,
-    'Process step gallery',
-  )
-}
-
 export default function multiImageGalleryPlugin() {
   return {
     name: 'mizo-multi-image-gallery',
@@ -168,9 +143,6 @@ export default function multiImageGalleryPlugin() {
       }
       if (normalizedId.endsWith('/src/pages/Home.jsx')) {
         return { code: transformHome(source), map: null }
-      }
-      if (normalizedId.endsWith('/src/pages/Process.jsx')) {
-        return { code: transformProcess(source), map: null }
       }
       return null
     },

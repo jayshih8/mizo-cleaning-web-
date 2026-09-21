@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import SiteImage from './SiteImage';
 import { ChevronLeft, ChevronRight, Expand, X } from 'lucide-react';
 import './ImageGallery.css';
@@ -20,11 +20,13 @@ export default function ImageGallery({
   className = '',
   style,
   enableLightbox = true,
+  layout = 'carousel',
   sizes = '(max-width: 640px) 100vw, 600px',
 }) {
   const sources = useMemo(() => normalizeSources(images, fallback), [images, fallback]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const dialogRef = useRef(null);
 
   useEffect(() => {
     if (activeIndex >= sources.length) setActiveIndex(0);
@@ -35,21 +37,27 @@ export default function ImageGallery({
 
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
+    const dialog = dialogRef.current;
+    const trigger = document.activeElement;
+    dialog.showModal();
 
     const handleKeyDown = (event) => {
-      if (event.key === 'Escape') setIsLightboxOpen(false);
       if (event.key === 'ArrowLeft' && sources.length > 1) {
+        event.preventDefault();
         setActiveIndex((current) => (current - 1 + sources.length) % sources.length);
       }
       if (event.key === 'ArrowRight' && sources.length > 1) {
+        event.preventDefault();
         setActiveIndex((current) => (current + 1) % sources.length);
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
+    dialog.addEventListener('keydown', handleKeyDown);
     return () => {
+      dialog.close();
       document.body.style.overflow = previousOverflow;
-      window.removeEventListener('keydown', handleKeyDown);
+      dialog.removeEventListener('keydown', handleKeyDown);
+      if (trigger?.isConnected) trigger.focus({ preventScroll: true });
     };
   }, [isLightboxOpen, sources.length]);
 
@@ -74,6 +82,26 @@ export default function ImageGallery({
 
   return (
     <>
+      {layout === 'grid' ? (
+        <div className={`multi-image-collage ${sources.length === 1 ? 'multi-image-collage-single' : ''} ${className}`} style={style}>
+          {sources.map((source, index) => (
+            <button
+              key={source}
+              type="button"
+              className="multi-image-collage-item"
+              onClick={() => {
+                if (!enableLightbox) return;
+                setActiveIndex(index);
+                setIsLightboxOpen(true);
+              }}
+              aria-label={`放大查看：${alt}，第 ${index + 1} 張`}
+            >
+              <SiteImage src={source} alt={`${alt}｜現場照片 ${index + 1}`} sizes={sizes} onError={applyFallback} />
+              {enableLightbox && <Expand className="multi-image-gallery-expand" size={18} aria-hidden="true" />}
+            </button>
+          ))}
+        </div>
+      ) : (
       <div className={`multi-image-gallery ${className}`} style={style}>
         <button
           type="button"
@@ -116,14 +144,18 @@ export default function ImageGallery({
           </>
         )}
       </div>
+      )}
 
       {isLightboxOpen && (
-        <div
+        <dialog
+          ref={dialogRef}
           className="multi-image-lightbox"
-          role="dialog"
-          aria-modal="true"
           aria-label={`${alt}圖片瀏覽器`}
-          onClick={() => setIsLightboxOpen(false)}
+          onCancel={() => setIsLightboxOpen(false)}
+          onClose={() => setIsLightboxOpen(false)}
+          onClick={(event) => {
+            if (event.target === event.currentTarget) setIsLightboxOpen(false);
+          }}
         >
           <button
             type="button"
@@ -164,7 +196,7 @@ export default function ImageGallery({
               <ChevronRight size={30} />
             </button>
           )}
-        </div>
+        </dialog>
       )}
     </>
   );

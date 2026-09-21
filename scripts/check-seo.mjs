@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import assert from 'node:assert/strict';
-import { PUBLIC_PAGES, SITE_URL } from '../src/lib/seo.js';
+import { escapeHtml, PUBLIC_PAGES, SITE_URL } from '../src/lib/seo.js';
 
 const config = JSON.parse(await fs.readFile('src/data/siteContent.generated.json', 'utf8'));
 const titles = new Set();
@@ -44,6 +44,28 @@ for (const service of config.services.items) {
   assert(files.get('/services').includes(service.title));
   assert(files.get('/services').includes(service.description));
 }
+// CMS service types must reach the public page, ahead of employee training.
+const aboutHtml = files.get('/about');
+const serviceTypes = config.about.serviceTypes;
+if (serviceTypes?.items?.length) {
+  const sectionStart = aboutHtml.indexOf('id="company-service-types-title"');
+  assert(sectionStart >= 0, 'Missing company service types in About HTML');
+  assert(aboutHtml.indexOf(`>${escapeHtml(config.about.training.title)}</h2>`, sectionStart) > sectionStart);
+  for (const item of serviceTypes.items) {
+    assert(aboutHtml.includes(escapeHtml(item.title)));
+    assert(aboutHtml.includes(escapeHtml(item.description || '')));
+  }
+}
+// Every uploaded process photo must be available without switching carousel slides.
+const processHtml = files.get('/process');
+for (const step of config.process.steps) {
+  const photos = Array.isArray(step.images) ? step.images.filter(source => typeof source === 'string' && source.trim()) : [];
+  if (!photos.length) photos.push(step.image || '/images/banner_building.png');
+  for (const source of new Set(photos)) {
+    assert(processHtml.includes(`src="${escapeHtml(source)}"`), `Missing process photo: ${step.title}`);
+  }
+}
+assert(!processHtml.includes('class="multi-image-gallery-arrow'), 'Process page still contains a carousel');
 for (const page of ['admin-portal', '404']) {
   const html = await fs.readFile(`dist/${page}.html`, 'utf8');
   assert(html.includes('content="noindex, nofollow"'));
